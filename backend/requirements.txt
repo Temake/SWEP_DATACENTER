@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 sqlmodel
 alembic
-psycopg2-binary  L
+psycopg2-binary  
 python-jose[cryptography]  
 passlib[bcrypt]   
 pydantic[email]
