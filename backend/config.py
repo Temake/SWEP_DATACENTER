@@ -1,12 +1,16 @@
 from pydantic_settings import SettingsConfigDict
 from typing import Optional
 import os
+from dotenv import load_dotenv
+load_dotenv(".env")
+
+
 from pydantic import BaseModel
 
 from functools import lru_cache
 
 class BaselConfig(BaseModel):
-    ENV_STATE :str =  os.getenv("ENV_STATE")
+    ENV_STATE :str = os.getenv("ENV_STATE")
     model_config=SettingsConfigDict(env_file=".env")
 
 class GlobalConfig(BaselConfig):
@@ -27,3 +31,4 @@ def get_config(env_state:str):
     return configs[env_state]()
 
 config= get_config(BaselConfig().ENV_STATE)
+
