@@ -1,4 +1,4 @@
-#  Student Project Datacenter (Backend)
+#  Scholar Base (Backend)
 
 This is the backend for the Student Project Datacenter built with **FastAPI + SQLModel**.  
 It handles authentication, user roles (Admin, Supervisor, Student), project management, and file uploads.

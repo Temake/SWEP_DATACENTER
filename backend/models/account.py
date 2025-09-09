@@ -40,10 +40,9 @@ class SupervisorAccount(BaseSupervisor,table=True):
     
     students: List[StudentAccount] = Relationship(back_populates="supervisor")
     supervised_projects: List["Project"] = Relationship(back_populates="supervisor")
-    
+
 
 class AdminAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
-    
     
     

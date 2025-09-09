@@ -22,6 +22,13 @@ class Tags(str,enum.Enum):
     DATABASES = "Databases"
     EMBEDDED_SYSTEMS = "Embedded Systems"
     ANIMATION = "Animation"
+    MACHINE_LEARNING = "Machine Learning"
+    AR_VR = "AR/VR"
+    BIG_DATA = "Big Data"
+    ROBOTICS="Robotics"
+    OTHERS="Others"
+    
+    
     
 class Status(str,enum.Enum):
     PENDING = "Pending"
