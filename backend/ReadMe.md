@@ -52,3 +52,7 @@ venv\Scripts\activate      # Windows
 ```bash
 pip install -r requirements.txt
 ```
+### Run The App
+```bash
+uvicorn main:app --reload
+```
