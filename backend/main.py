@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from models.database import create_db_and_tables
-from models.account import Account
+from backend.models.database import create_db_and_tables
+from backend.models.account import Account
+from routers import project
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -12,6 +13,8 @@ async def lifespan(app:FastAPI):
 
 app=FastAPI(lifespan=lifespan,title="Student Data Center")
 
-@app.router.get("/")
-def root():
-    return "Welcome here"
+@app.get("/")
+def read_root():
+    return {"message": "Welcome here"}
+
+app.include_router(project.router)
