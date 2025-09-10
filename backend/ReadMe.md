@@ -1,4 +1,4 @@
-#  Student Project Datacenter (Backend)
+#  Scholar Base (Backend)
 
 This is the backend for the Student Project Datacenter built with **FastAPI + SQLModel**.  
 It handles authentication, user roles (Admin, Supervisor, Student), project management, and file uploads.
@@ -52,6 +52,13 @@ venv\Scripts\activate      # Windows
 ```bash
 pip install -r requirements.txt
 ```
+### Create Env File
+
+```bash
+cp .env.example .env     # Linux/Mac
+copy .env.example .env   # Windows
+```
+
 ### Run The App
 ```bash
 uvicorn main:app --reload
