@@ -1,5 +1,5 @@
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from backend.config import config
+from config import config
 
 
 

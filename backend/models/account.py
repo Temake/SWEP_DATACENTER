@@ -1,4 +1,3 @@
-
 from sqlmodel import Field, SQLModel,Relationship
 from services.enums import Role
 from pydantic import EmailStr
@@ -44,5 +43,3 @@ class SupervisorAccount(BaseSupervisor,table=True):
 
 class AdminAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
-    
-    
