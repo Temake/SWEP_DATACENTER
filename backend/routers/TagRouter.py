@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
+from typing import Annotated
 from fastapi import HTTPException
 from models.projects import *
 from schemas.TagsSchema import ProjectRead
@@ -12,8 +13,7 @@ routers=APIRouter()
 
 @routers.get("/", response_model=list[Tags])
 def list_tags(session: Session = Depends(get_session)):
-    tags = session.exec(select(Tags)).all()
-    return tags
+    return [t.value for t in Tags]
 
 @routers.post("/{project_id}/tags", response_model=ProjectRead)
 def assign_tags_to_project(project_id: int, tags: list[Tags], session: Session = Depends(get_session)):
