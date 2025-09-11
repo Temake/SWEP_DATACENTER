@@ -9,3 +9,7 @@ pydantic[email]
 python-dotenv
 pydantic
 requests
+pyjwt
+pydantic_settings
+passlib[bcrypt]
+jwt
