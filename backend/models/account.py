@@ -13,7 +13,7 @@ class BaseAccount(SQLModel):
     name:str =Field(nullable=False)
     role:Role
     email:EmailStr =Field(nullable=False,unique=True,index=True)
-    email_verified: bool = Field(default=False)
+    email_verified: Optional[bool] = Field(default=False)
     department:str =Field(nullable=True)
     hashed_password:str =Field(nullable=False)
     
@@ -46,4 +46,8 @@ class AdminAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
     
     
-    
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(index=True, unique=True, nullable=False)
+    full_name: Optional[str] = None
+    hashed_password: str
