@@ -5,7 +5,7 @@ from pydantic import EmailStr
 from datetime import datetime
 from typing import Optional, Tuple,List
 from sqlmodel import JSON
-from .projects import *
+from .projects import Project
 
 
 

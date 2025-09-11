@@ -1,12 +1,15 @@
 
 from sqlmodel import Field, Relationship,SQLModel
 from services.enums import Status
-from .account import *
 from services.enums import Tags
 from enum import Enum
 from sqlmodel import Field, SQLModel, Relationship,Column
-from typing import Optional, List
+from typing import Optional, List,TYPE_CHECKING
 from datetime import datetime
+from sqlalchemy import JSON
+
+if TYPE_CHECKING:
+    from .account import StudentAccount, SupervisorAccount
 
 class ProjectStatus(str, Enum):
     PENDING = "pending"
@@ -67,6 +70,9 @@ class Project(SQLModel, table=True):
     student: Optional[Student] = Relationship(back_populates="projects")
     supervisor: Optional[Supervisor] = Relationship(back_populates="projects")
     tags: List[Tag] = Relationship(back_populates="projects", link_model=ProjectTagLink)
+
+
+    
 
 # class Tag(SQLModel, table=True):
 #     id: int = Field(default=None, primary_key=True)

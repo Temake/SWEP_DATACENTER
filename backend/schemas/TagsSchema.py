@@ -1,13 +1,5 @@
 from pydantic import BaseModel
 from typing import List, Optional
-
-
-
-class TagCreate(BaseModel):
-    tag_name: str
-
-
-from typing import List, Optional
 from sqlmodel import SQLModel
 from services.enums import Status
 
@@ -18,6 +10,7 @@ class ProjectCreate(SQLModel):
     file_url: Optional[str] = None
     student_id: int
     supervisor_id: Optional[int] = None
+    tags: Optional[List[str]] = []
     tag_ids: Optional[List[int]] = []
 
 
@@ -30,16 +23,4 @@ class ProjectRead(SQLModel):
     student_id: int
     supervisor_id: Optional[int] = None
     tags: List[str] = []
-
-
-class TagCreate(SQLModel):
-    name: str
-
-
-class TagRead(SQLModel):
-    id: int
-    name: str
-
-
-class TagUpdate(SQLModel):
-    name: Optional[str] = None
+   
