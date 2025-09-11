@@ -1,10 +1,12 @@
-
-from sqlmodel import Field, Relationship,SQLModel
+from sqlmodel import Field, Relationship, SQLModel, JSON
 from services.enums import Status
 from services.enums import Tags
 from sqlmodel import Field, SQLModel, Relationship, Column
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+
+if TYPE_CHECKING:
+    from .account import StudentAccount, SupervisorAccount
 
 
 

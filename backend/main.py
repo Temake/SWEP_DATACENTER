@@ -5,6 +5,7 @@ from models.account import *
 from models.database import *
 from routers.TagRouter import routers
 from models.projects import *
+from routers.project import routers as project_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,3 +19,5 @@ def root():
     return {"name": "Welcome here"}
 
 app.include_router(router=routers, prefix="/api/tags", tags=["Tags"])
+
+app.include_router(project_router, prefix="/api/projects", tags=["Projects"])

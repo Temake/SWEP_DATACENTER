@@ -3,7 +3,8 @@ from sqlmodel import Session, select
 from typing import Annotated
 from fastapi import HTTPException
 from models.projects import *
-from schemas.TagsSchema import ProjectRead
+from schemas.project import ProjectRead
+from schemas.TagsSchema import TagRead, TagCreate, TagUpdate
 from models.account import *
 from models.database import get_session
 from services.enums import Status,Tags

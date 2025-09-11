@@ -1,5 +1,5 @@
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from  config import config
+from config import config
 
 
 
