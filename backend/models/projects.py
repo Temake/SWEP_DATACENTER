@@ -17,18 +17,20 @@ if TYPE_CHECKING:
 
 
 class Project(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
-    title: str = Field(nullable=False, index=True)
-    description: str = Field(nullable=False)
-    file_url: Optional[str] = Field(default=None)
-    status: Status = Field(default=Status.PENDING)
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    supervisor: Optional["SupervisorAccount"] = Relationship(back_populates="supervised_projects")
-    student_id: int = Field(foreign_key="studentaccount.id", nullable=False)
-    supervisor_id: Optional[int] = Field(default=None, foreign_key="supervisoraccount.id")
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(index=True, max_length=200)
+    description: str
+    year: int
+    status: ProjectStatus = Field(default=ProjectStatus.PENDING)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    student_id: Optional[int] = Field(default=None, foreign_key="student.id")
+    supervisor_id: Optional[int] = Field(default=None, foreign_key="supervisor.id")
+    
+    student: Optional[Student] = Relationship(back_populates="projects")
+    supervisor: Optional[Supervisor] = Relationship(back_populates="projects")
+    tags: List[Tag] = Relationship(back_populates="projects", link_model=ProjectTagLink)
 
-    tags: List[str] = Field(default=[], sa_column=Column(JSON))
+    
 # class Tag(SQLModel, table=True):
 #     id: int = Field(default=None, primary_key=True)
 #     name: str = Field(nullable=False, unique=True, index=True)
