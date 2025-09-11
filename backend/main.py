@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from models.database import create_db_and_tables
 from models.account import *
 from models.database import *
-from routers.TagRouter import routers
+from routers.TagRouter import routers as tag_router
 from models.projects import *
 from routers.project import routers as project_router
 
@@ -16,8 +16,8 @@ app = FastAPI(lifespan=lifespan, title="Scholar Base")
 
 @app.get("/")
 def root():
-    return {"name": "Welcome here"}
+    return {"message": "Welcome to Scholar Base API you can read the docs on the path (root_url)/docs"}
 
-app.include_router(router=routers, prefix="/api/tags", tags=["Tags"])
+app.include_router(router=tag_router, prefix="/api/tags", tags=["Tags"])
 
-app.include_router(project_router, prefix="/api/projects", tags=["Projects"])
+app.include_router(project_router, prefix="/api", tags=["Projects"])

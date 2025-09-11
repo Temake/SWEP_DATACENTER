@@ -8,7 +8,12 @@ from typing import List
 
 routers= APIRouter(prefix="/projects", tags=["Projects"])
 
-# Create project
+@routers.get("/", response_model=List[ProjectRead])
+def list_projects(session: Session = Depends(get_session)):
+    projects = session.exec(select(Project)).all()
+    return projects
+
+
 @routers.post("/", response_model=ProjectRead)
 def create_project(
     project: ProjectCreate,
@@ -17,9 +22,11 @@ def create_project(
     new_project = Project(
         title=project.title,
         description=project.description,
+        year=project.year,
         file_url=project.file_url,
         status=Status.PENDING,
         student_id=project.student_id,
+        tags=project.tags,
         supervisor_id=project.supervisor_id
     )
     session.add(new_project)
@@ -28,15 +35,10 @@ def create_project(
     return new_project
 
 
-# List projects
-@routers.get("/", response_model=List[ProjectRead])
-def list_projects(session: Session = Depends(get_session)):
-    projects = session.exec(select(Project)).all()
-    return projects
 
 
-# Update project
-@routers.put("/{project_id}", response_model=ProjectRead)
+
+@routers.patch("/{project_id}", response_model=Project)
 def update_project(
     project_id: int,
     project_update: ProjectUpdate,
@@ -46,8 +48,8 @@ def update_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    for key, value in project_update.dict(exclude_unset=True).items():
-        setattr(project, key, value)
+    project_data = project_update.model_dump(exclude_unset=True)
+    project.sqlmodel_update(project_data)
 
     session.add(project)
     session.commit()

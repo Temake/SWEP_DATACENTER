@@ -1,22 +1,24 @@
 from typing import List, Optional
 from sqlmodel import SQLModel
-from services.enums import Status
+from services.enums import Status,Tags
 
 
 class ProjectCreate(SQLModel):
     title: str
     description: str
+    year: str
     file_url: Optional[str] = None
     student_id: int
     supervisor_id: Optional[int] = None
-    tag_id: Optional[List[int]] = []
+    tags: List[Tags] = []
 
 
 class ProjectUpdate(SQLModel):
     title: Optional[str] = None
+    year: Optional[str] = None
     description: Optional[str] = None
     file_url: Optional[str] = None
-    tag_id: Optional[List[int]] = None
+    tags: List[Tags] = []
 
 
 class ProjectRead(SQLModel):
@@ -27,7 +29,7 @@ class ProjectRead(SQLModel):
     status: Status
     student_id: int
     supervisor_id: Optional[int] = None
-    tags: List[str] = []
+    tags: List[Tags] = []
     
     
     class Config:

@@ -4,7 +4,7 @@ from jose import jwt, JWTError
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-SECRET_KEY = "your-secret-key"  # Use your actual secret key
+SECRET_KEY = "your-secret-key"  
 ALGORITHM = "HS256"
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
