@@ -1,7 +1,5 @@
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from  config import config
-from sqlalchemy.orm import sessionmaker
-
+from config import config
 from sqlmodel import SQLModel, Session, create_engine
 
 
@@ -21,9 +19,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_session():
+    with Session(engine) as session:
+        yield session

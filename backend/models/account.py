@@ -44,10 +44,3 @@ class SupervisorAccount(BaseSupervisor,table=True):
 
 class AdminAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
-    
-    
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    username: str = Field(index=True, unique=True, nullable=False)
-    full_name: Optional[str] = None
-    hashed_password: str
