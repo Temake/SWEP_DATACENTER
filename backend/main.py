@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from models.database import create_db_and_tables
@@ -12,7 +13,9 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
 
-app = FastAPI(lifespan=lifespan, title="Scholar Base")
+#app = FastAPI(lifespan=lifespan, title="Scholar Base")
+app = FastAPI()
+
 
 @app.get("/")
 def root():
@@ -20,4 +23,6 @@ def root():
 
 app.include_router(router=tag_router, prefix="/api/tags", tags=["Tags"])
 
+
 app.include_router(project_router, prefix="/api", tags=["Projects"])
+

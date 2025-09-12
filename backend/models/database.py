@@ -3,7 +3,6 @@ from config import config
 
 
 
-
 sqlite_file_name = "database.db"
 database_url = config.DATABASE_URL
 
@@ -15,9 +14,11 @@ else:
     connect_args = {"check_same_thread": False}
     engine = create_engine(database_url, echo=True, connect_args=connect_args,pool_reset_on_return='commit')
 
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+
     
 def get_session():
     with Session(engine) as session:

@@ -12,7 +12,7 @@ class BaseAccount(SQLModel):
     name:str =Field(nullable=False)
     role:Role
     email:EmailStr =Field(nullable=False,unique=True,index=True)
-    email_verified: bool = Field(default=False)
+    email_verified: Optional[bool] = Field(default=False)
     department:str =Field(nullable=True)
     hashed_password:str =Field(nullable=False)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
