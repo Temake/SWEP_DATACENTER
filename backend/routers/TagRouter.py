@@ -43,13 +43,13 @@ def remove_tags_from_project(project_id: int, tags: list[Tags], session: Session
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project.tags = [t for t in project.tags if t in tags]
+    project.tags = [t for t in project.tags if t not in tags]
     session.add(project)
     session.commit()
     session.refresh(project)
     return project
 
-@routers.get("/project")
+@routers.post("/project")
 def serach_projects_by_tags(tags: list[Tags], session: Session = Depends(get_session)):
     statement = select(Project).where(
         Project.tags.contains(tags),

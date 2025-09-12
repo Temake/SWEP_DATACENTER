@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from models.projects import Project
+from models.account import StudentAccount
 from schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from models.database import get_session
 from services.enums import Status
@@ -29,6 +30,9 @@ def create_project(
         tags=project.tags,
         supervisor_id=project.supervisor_id
     )
+    student = session.get(StudentAccount,new_project.student_id)
+    if not student:
+        raise HTTPException(status_code=404,detail= "Student Not Found")
     session.add(new_project)
     session.commit()
     session.refresh(new_project)

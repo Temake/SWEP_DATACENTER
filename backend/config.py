@@ -17,6 +17,9 @@ class BaselConfig(BaseModel):
 class GlobalConfig(BaselConfig):
     DATABASE_URL : Optional[str] = "sqlite:///data.db"
     DB_ROLL_BACK: bool = False
+    B2_KEY_ID : Optional[str] = None
+    B2_APPLICATION_KEY : Optional[str] = None
+    B2_BUCKET_NAME: Optional[str] = None
 
 class DevConfig(GlobalConfig):
     DATABASE_URL : str  = os.getenv("DEV_DATABASE_URL")

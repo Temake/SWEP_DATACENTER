@@ -13,7 +13,7 @@ if config.ENV_STATE == 'prod':
 else:
 
     connect_args = {"check_same_thread": False}
-    engine = create_engine(database_url, echo=True, connect_args=connect_args)
+    engine = create_engine(database_url, echo=True, connect_args=connect_args,pool_reset_on_return='commit')
 
 
 def create_db_and_tables():
