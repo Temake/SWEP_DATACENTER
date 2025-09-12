@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from models.database import create_db_and_tables
 from models.account import *
 from models.database import *
+from routers.TagRouter import routers as tag_router
 from models.projects import *
 from routers.project import routers as project_router
 
@@ -22,4 +23,6 @@ def root():
 
 app.include_router(router=tag_router, prefix="/api/tags", tags=["Tags"])
 
+
 app.include_router(project_router, prefix="/api", tags=["Projects"])
+

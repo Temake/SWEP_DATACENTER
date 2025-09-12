@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 
+
 from pydantic import BaseModel
 
 from functools import lru_cache
@@ -16,6 +17,9 @@ class BaselConfig(BaseModel):
 class GlobalConfig(BaselConfig):
     DATABASE_URL : Optional[str] = "sqlite:///data.db"
     DB_ROLL_BACK: bool = False
+    B2_KEY_ID : Optional[str] = None
+    B2_APPLICATION_KEY : Optional[str] = None
+    B2_BUCKET_NAME: Optional[str] = None
 
 class DevConfig(GlobalConfig):
     DATABASE_URL : str  = os.getenv("DEV_DATABASE_URL")
@@ -32,3 +36,5 @@ def get_config(env_state:str):
 
 config= get_config(BaselConfig().ENV_STATE)
 
+
+#uvicorn backend.main:app --reload

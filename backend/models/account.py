@@ -1,11 +1,10 @@
-
 from sqlmodel import Field, SQLModel,Relationship
 from services.enums import Role
 from pydantic import EmailStr
 from datetime import datetime
 from typing import Optional, Tuple,List
 from sqlmodel import JSON
-from .projects import *
+from .projects import Project
 
 
 
@@ -16,13 +15,14 @@ class BaseAccount(SQLModel):
     email_verified: Optional[bool] = Field(default=False)
     department:str =Field(nullable=True)
     hashed_password:str =Field(nullable=False)
-    
+    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     
 
   
 class StudentAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
     matric_no:str = Field(nullable=False,unique=True)
+    projects: List[Project] = Relationship(back_populates="student")
     supervisor_id: Optional[int] = Field(default=None, foreign_key="supervisoraccount.id")
     supervisor: Optional["SupervisorAccount"] = Relationship(back_populates="students")
 
@@ -40,7 +40,7 @@ class SupervisorAccount(BaseSupervisor,table=True):
     
     students: List[StudentAccount] = Relationship(back_populates="supervisor")
     supervised_projects: List["Project"] = Relationship(back_populates="supervisor")
-    
+
 
 class AdminAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
