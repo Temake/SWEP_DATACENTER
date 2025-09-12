@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from models.database import create_db_and_tables
@@ -14,13 +15,15 @@ async def lifespan(app: FastAPI):
     yield
 
 #app = FastAPI(lifespan=lifespan, title="Scholar Base")
-app = FastAPI(lifespan=lifespan, title="Scholar Base")
-
-
+app = FastAPI()
 
 
 @app.get("/")
 def root():
    return {"name": "Welcome here"}
 
-app.include_router(auth_router, tags=["Auth"])
+app.include_router(auth_router)
+
+
+#app = FastAPI()
+
