@@ -23,5 +23,3 @@ def root():
 app.include_router(router=tag_router, prefix="/api/tags", tags=["Tags"])
 
 app.include_router(project_router, prefix="/api", tags=["Projects"])
-#app = FastAPI()
-
