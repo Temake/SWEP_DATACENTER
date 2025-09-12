@@ -1,16 +1,7 @@
-from datetime import datetime, timedelta, timezone
-from typing import Annotated
-
-#from schemas.   import xxxxxx model.
-import jwt
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jwt.exceptions import JWTException
-from passlib.context import CryptContext
-from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
-# new imports.
-
+from pydantic import BaseModel, EmailStr
+from services.enums import Role
 
 
 class Token(BaseModel):
@@ -19,33 +10,84 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str | None = None
+    email: Optional[str] = None
+    role: Optional[Role] = None
 
 
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
-
-
-class UserInDB(User):
-    hashed_password: str
-
-class UserBase(BaseModel):
-    username: str
-    full_name: Optional[str] = None
-
-
-class UserCreate(UserBase):
+class UserLogin(BaseModel):
+    email: EmailStr
     password: str
 
 
-class UserRead(UserBase):
+class UserBase(BaseModel):
+    name: str
+    email: EmailStr
+    role: Role
+    department: Optional[str] = None
+
+
+class StudentRegister(UserBase):
+    password: str
+    matric_no: str
+    role: Role = Role.STUDENT
+
+
+class SupervisorRegister(UserBase):
+    password: str
+    faculty: Optional[str] = None
+    office_address: Optional[str] = None
+    phone_number: Optional[str] = None
+    position: Optional[str] = None
+    bio: Optional[str] = None
+    role: Role = Role.SUPERVISOR
+
+
+class AdminRegister(UserBase):
+    password: str
+    role: Role = Role.ADMIN
+
+
+class UserResponse(BaseModel):
     id: int
+    name: str
+    email: EmailStr
+    role: Role
+    department: Optional[str] = None
+    email_verified: bool
+    created_at: datetime
 
     class Config:
-        orm_mode = True  # important to read data from SQLModel ORM
+        from_attributes = True
+
+
+class StudentResponse(UserResponse):
+    matric_no: str
+    supervisor_id: Optional[int] = None
+
+
+class SupervisorResponse(UserResponse):
+    faculty: Optional[str] = None
+    office_address: Optional[str] = None
+    phone_number: Optional[str] = None
+    position: Optional[str] = None
+    bio: Optional[str] = None
+
+
+class AdminResponse(UserResponse):
+    pass
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+
+
+class EmailVerification(BaseModel):
+    token: str
 
 
 class Token(BaseModel):

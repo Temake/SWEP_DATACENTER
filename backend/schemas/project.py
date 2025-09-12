@@ -7,9 +7,9 @@ class ProjectCreate(SQLModel):
     title: str
     description: str
     year: str
-    file_url: Optional[str] = None
-    student_id: int
+    student_id: Optional[int] = None
     supervisor_id: Optional[int] = None
+    file_url: Optional[str] = None
     tags: List[Tags] = []
 
 

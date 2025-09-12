@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from models.projects import *
 from schemas.project import ProjectRead
 from models.account import *
+from core.dependencies import AccountType,get_current_user
 from models.database import get_session
 from services.enums import Status,Tags
 
@@ -16,7 +17,7 @@ def list_tags(session: Session = Depends(get_session)):
     return [t.value for t in Tags]
 
 @routers.post("/{project_id}/tags", response_model=ProjectRead)
-def assign_tags_to_project(project_id: int, tags: list[Tags], session: Session = Depends(get_session)):
+def assign_tags_to_project(project_id: int, tags: list[Tags], session: Session = Depends(get_session),current_user:AccountType = Depends(get_current_user)):
     project = session.get(Project, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
