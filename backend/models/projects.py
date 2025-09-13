@@ -25,6 +25,7 @@ class Project(SQLModel, table=True):
     year: str = Field(index=True,nullable=False)
     description: str = Field(nullable=False)
     file_url: Optional[str] = Field(default=None)
+    document_url: Optional[str] = Field(default=None)
     status: Status = Field(default=Status.PENDING)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)

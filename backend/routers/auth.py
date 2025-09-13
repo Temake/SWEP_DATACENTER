@@ -31,13 +31,13 @@ def register_student(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
     if check_matric_exists(session, student_data.matric_no):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Matric number already registered"
         )
-    
+
     hashed_password = get_password_hash(student_data.password)
     new_student = StudentAccount(
         name=student_data.name,
@@ -47,11 +47,11 @@ def register_student(
         hashed_password=hashed_password,
         matric_no=student_data.matric_no
     )
-    
+
     session.add(new_student)
     session.commit()
     session.refresh(new_student)
-    
+
     return new_student
 
 
@@ -65,7 +65,7 @@ def register_supervisor(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
     hashed_password = get_password_hash(supervisor_data.password)
     new_supervisor = SupervisorAccount(
         name=supervisor_data.name,
@@ -79,11 +79,11 @@ def register_supervisor(
         position=supervisor_data.position,
         bio=supervisor_data.bio
     )
-    
+
     session.add(new_supervisor)
     session.commit()
     session.refresh(new_supervisor)
-    
+
     return new_supervisor
 
 
@@ -97,7 +97,7 @@ def register_admin(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
     hashed_password = get_password_hash(admin_data.password)
     new_admin = AdminAccount(
         name=admin_data.name,
@@ -106,11 +106,11 @@ def register_admin(
         department=admin_data.department,
         hashed_password=hashed_password
     )
-    
+
     session.add(new_admin)
     session.commit()
     session.refresh(new_admin)
-    
+
     return new_admin
 
 
@@ -126,13 +126,13 @@ def login_user(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email, "role": user.role.value, "user_id": user.id},
         expires_delta=access_token_expires
     )
-    
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -148,13 +148,13 @@ def login_user_json(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email, "role": user.role.value, "user_id": user.id},
         expires_delta=access_token_expires
     )
-    
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 

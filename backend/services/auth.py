@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Union
 import os
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
@@ -11,7 +11,7 @@ from services.enums import Role
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dj=k3n903*99*%$)4qu$ohdexpvh!rq*6iu7y5uiwtp_=zb&3)")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -78,6 +78,12 @@ def verify_token(token: str) -> dict:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
