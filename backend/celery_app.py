@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 # Create Celery app
 celery_app = Celery(
-    "sweps_backend",
+    "Scholar Base",
     broker=config.CELERY_BROKER_URL,
     backend=config.CELERY_RESULT_BACKEND,
     include=["tasks.project_cleanup"]
@@ -23,20 +23,18 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
     
-    # Beat schedule - run cleanup task every 24 hours at 2 AM UTC
+   
     beat_schedule={
         "cleanup-pending-projects": {
             "task": "tasks.project_cleanup.cleanup_pending_projects",
-            "schedule": crontab(hour=2, minute=0),  # Run at 2:00 AM UTC daily
+            "schedule": crontab(hour=2, minute=0), 
         },
     },
-    
-    # Task routing
+
     task_routes={
         "tasks.project_cleanup.*": {"queue": "cleanup"},
     },
     
-    # Worker settings
     worker_prefetch_multiplier=1,
     task_acks_late=True,
     worker_max_tasks_per_child=1000,
