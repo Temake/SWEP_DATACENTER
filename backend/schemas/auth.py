@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr
+from core.dependencies import AccountType
 from services.enums import Role
 
 
@@ -37,7 +38,7 @@ class SupervisorRegister(UserBase):
     faculty: Optional[str] = None
     office_address: Optional[str] = None
     phone_number: Optional[str] = None
-    position: Optional[str] = None
+    title: Optional[str] = None  # Changed from position to title
     bio: Optional[str] = None
     role: Role = Role.SUPERVISOR
 
@@ -69,12 +70,13 @@ class SupervisorResponse(UserResponse):
     faculty: Optional[str] = None
     office_address: Optional[str] = None
     phone_number: Optional[str] = None
-    position: Optional[str] = None
+    title: Optional[str] = None  # Changed from position to title
     bio: Optional[str] = None
 
 
 class AdminResponse(UserResponse):
     pass
+
 
 
 class PasswordChange(BaseModel):
@@ -91,5 +93,6 @@ class EmailVerification(BaseModel):
 
 
 class Token(BaseModel):
+    user:AccountType
     access_token: str
     token_type: str

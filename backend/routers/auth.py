@@ -21,7 +21,7 @@ from core.dependencies import get_current_user, AccountType
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@auth_router.post("/register/student", response_model=StudentResponse)
+@auth_router.post("/register/Student", response_model=StudentResponse)
 def register_student(
     student_data: StudentRegister,
     session: Session = Depends(get_session)
@@ -55,7 +55,7 @@ def register_student(
     return new_student
 
 
-@auth_router.post("/register/supervisor", response_model=SupervisorResponse)
+@auth_router.post("/register/Supervisor", response_model=SupervisorResponse)
 def register_supervisor(
     supervisor_data: SupervisorRegister,
     session: Session = Depends(get_session)
@@ -73,10 +73,9 @@ def register_supervisor(
         role=Role.SUPERVISOR,
         department=supervisor_data.department,
         hashed_password=hashed_password,
-        faculty=supervisor_data.faculty,
         office_address=supervisor_data.office_address,
         phone_number=supervisor_data.phone_number,
-        position=supervisor_data.position,
+        title=supervisor_data.title,
         bio=supervisor_data.bio
     )
 
@@ -87,7 +86,7 @@ def register_supervisor(
     return new_supervisor
 
 
-@auth_router.post("/register/admin", response_model=AdminResponse)
+@auth_router.post("/register/Admin", response_model=AdminResponse)
 def register_admin(
     admin_data: AdminRegister,
     session: Session = Depends(get_session)
@@ -114,29 +113,8 @@ def register_admin(
     return new_admin
 
 
-@auth_router.post("/login", response_model=Token)
-def login_user(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    session: Session = Depends(get_session)
-):
-    user = authenticate_user(session, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email, "role": user.role.value, "user_id": user.id},
-        expires_delta=access_token_expires
-    )
-
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-@auth_router.post("/login/json", response_model=Token)
+@auth_router.post("/login/", response_model=Token)
 def login_user_json(
     login_data: UserLogin,
     session: Session = Depends(get_session)
@@ -155,7 +133,7 @@ def login_user_json(
         expires_delta=access_token_expires
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"user":user,"access_token": access_token, "token_type": "bearer"}
 
 
 @auth_router.get("/me")

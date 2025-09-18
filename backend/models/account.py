@@ -30,7 +30,7 @@ class BaseSupervisor(BaseAccount):
     faculty:Optional[str] = Field(default=None)
     office_address:Optional[str] = Field(default=None)
     phone_number:Optional[str] = Field(default=None,unique=True)
-    position:Optional[str] = Field(default=None)
+    title:Optional[str] = Field(default=None)  # Changed from position to title
     office_hours: Optional[dict] = Field(default=None, sa_type=JSON)
     bio:Optional[str] = Field(default=None,max_length=300)
 

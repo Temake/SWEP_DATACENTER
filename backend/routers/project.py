@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security, Query
 from fastapi.security import HTTPBearer
 from sqlmodel import Session, select
 from typing import Optional, List
@@ -13,6 +13,7 @@ from core.dependencies import (
     get_current_user, get_current_student, get_current_supervisor,
     require_supervisor_or_admin, require_student_or_supervisor, AccountType
 )
+from sqlalchemy import or_
 
 routers = APIRouter(prefix="/projects", tags=["Projects"])
 security = HTTPBearer()
@@ -21,19 +22,31 @@ security = HTTPBearer()
 @routers.get("/", response_model=List[ProjectRead])
 def list_my_projects(
     session: Session = Depends(get_session),
-    current_user: AccountType = Depends(get_current_user)
+    current_user: AccountType = Depends(get_current_user),
+    year: Optional[str] = None,
+    tags: Optional[List[Tags]] = Query(None, description="Filter by one or more tags"),
+    match_all: bool = Query(False, description="If true, require all tags to match; otherwise any")
 ):
     if current_user.role.value == "Student":
-        projects = session.exec(
-            select(Project).where(Project.student_id == current_user.id)
-        ).all()
+        statement = select(Project).where(Project.student_id == current_user.id)
     elif current_user.role.value == "Supervisor":
-        projects = session.exec(
-            select(Project).where(Project.supervisor_id == current_user.id)
-        ).all()
+        statement = select(Project).where(Project.supervisor_id == current_user.id)
     else:
-        projects = session.exec(select(Project)).all()
+        statement = select(Project)
 
+    if year:
+        statement = statement.where(Project.year == year)
+
+    if tags:
+        tag_values = [t.value for t in tags]
+        if match_all:
+            statement = statement.where(Project.tags.contains(tag_values))
+        else:
+            ors = [Project.tags.contains([tv]) for tv in tag_values]
+            if ors:
+                statement = statement.where(or_(*ors))
+
+    projects = session.exec(statement).all()
     return projects
 
 
@@ -78,11 +91,31 @@ async def create_project(
 @routers.get("/all", response_model=List[ProjectRead])
 def get_all_project(
     session: Session = Depends(get_session),
-    current_user: AccountType = Depends(get_current_user)
+    current_user: AccountType = Depends(get_current_user),
+    year: Optional[str] = None,
+    tags: Optional[List[Tags]] = Query(None, description="Filter by one or more tags"),
+    match_all: bool = Query(False, description="If true, require all tags to match; otherwise any"),
+    status: Optional[Status] = None,
 ):
+    statement = select(Project)
 
-    statement = session.exec(select(Project)).all()
-    return statement
+    if year:
+        statement = statement.where(Project.year == year)
+
+    if status:
+        statement = statement.where(Project.status == status)
+
+    if tags:
+        tag_values = [t.value for t in tags]
+        if match_all:
+            statement = statement.where(Project.tags.contains(tag_values))
+        else:
+            ors = [Project.tags.contains([tv]) for tv in tag_values]
+            if ors:
+                statement = statement.where(or_(*ors))
+
+    projects = session.exec(statement).all()
+    return projects
 
 
 @routers.get("/supervised-projects", response_model=List[ProjectRead])
@@ -216,6 +249,5 @@ def review_project(
     session.commit()
     session.refresh(project)
     return project
-
 
 

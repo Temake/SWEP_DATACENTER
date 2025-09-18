@@ -10,6 +10,8 @@ from routers.TagRouter import routers as tag_router
 from models.projects import *
 from routers.project import routers as project_router
 from routers.auth import auth_router
+from routers.admin import admin
+from routers.supervisor import supervisor_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,4 +49,6 @@ def root():
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
 app.include_router(router=tag_router, prefix="/api/tags", tags=["Tags"])
 app.include_router(project_router, prefix="/api", tags=["Projects"])
+app.include_router(admin, prefix="/api", tags=["Admin"])
+app.include_router(supervisor_router, prefix="/api", tags=["Supervisor"])
 
