@@ -185,7 +185,7 @@ async def update_project_status(
             detail="You can only update status of projects assigned to you"
         )
     
-    # Update project status
+    
     project.status = request.status
     
     # If there's a review comment, you might want to store it in a separate field
@@ -203,19 +203,17 @@ async def get_supervisor_dashboard_stats(
     current_user: AccountType = Depends(get_current_supervisor),
     session: Session = Depends(get_session)
 ):
-    """Get supervisor dashboard statistics"""
     
-    # Count total students supervised
+    
     total_students = session.exec(
         select(func.count(StudentAccount.id)).where(StudentAccount.supervisor_id == current_user.id)
     ).first()
-    
-    # Count total projects supervised
+
     total_projects = session.exec(
         select(func.count(Project.id)).where(Project.supervisor_id == current_user.id)
     ).first()
     
-    # Count projects by status
+
     pending_projects = session.exec(
         select(func.count(Project.id)).where(
             Project.supervisor_id == current_user.id,

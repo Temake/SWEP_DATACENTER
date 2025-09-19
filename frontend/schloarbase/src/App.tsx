@@ -17,6 +17,8 @@ import SupervisorProfilePage from './pages/student/SupervisorProfilePage';
 import SupervisorDashboard from './pages/supervisor/SupervisorDashboard';
 import SupervisedProjectsPage from './pages/supervisor/SupervisedProjectsPage';
 import StudentListPage from './pages/supervisor/StudentListPage';
+import StudentProjectDetailPage from './pages/supervisor/StudentProjectDetailPage';
+import SupervisorAnalyticsPage from './pages/supervisor/SupervisorAnalyticsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageStudentsPage from './pages/admin/ManageStudentsPage';
 import ManageSupervisorsPage from './pages/admin/ManageSupervisorsPage';
@@ -129,6 +131,24 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[Role.SUPERVISOR]}>
                   <StudentListPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/supervisor/projects/:id"
+              element={
+                <ProtectedRoute allowedRoles={[Role.SUPERVISOR]}>
+                  <StudentProjectDetailPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/supervisor/analytics"
+              element={
+                <ProtectedRoute allowedRoles={[Role.SUPERVISOR]}>
+                  <SupervisorAnalyticsPage />
                 </ProtectedRoute>
               }
             />

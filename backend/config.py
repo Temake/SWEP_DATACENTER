@@ -36,11 +36,11 @@ class GlobalConfig(BaselConfig):
     DB_ROLL_BACK: bool = False
    
 class DevConfig(GlobalConfig):
-    DATABASE_URL : str  = os.getenv("DEV_DATABASE_URL")
+    DATABASE_URL : str  = os.getenv("DEV_DATABASE_URL", "sqlite:///data.db")
     # model_config= SettingsConfigDict(env_prefix="DEV_")
 
 class ProdConfig(GlobalConfig):
-    DATABASE_URL: str = os.getenv("PROD_DATABASE_URL")
+    DATABASE_URL: str = os.getenv("DATABASE_URL") or os.getenv("PROD_DATABASE_URL", "postgresql://user:password@db:5432/scholarbase")
     model_config= SettingsConfigDict(env_prefix="PROD_")
 
 @lru_cache()

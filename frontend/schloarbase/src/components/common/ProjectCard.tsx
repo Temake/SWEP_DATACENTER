@@ -154,6 +154,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               {format(new Date(project.created_at), 'MMM dd, yyyy')}
             </p>
           </div>
+
+          {/* Review Comment - Show only when project is rejected */}
+          {project.status === Status.REJECTED && project.review_comment && (
+            <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-1">
+                Rejection Reason:
+              </p>
+              <p className="text-sm text-red-700 dark:text-red-300">
+                {project.review_comment}
+              </p>
+            </div>
+          )}
         </div>
 
         {showActions && (

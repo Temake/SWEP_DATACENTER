@@ -6,7 +6,7 @@ from cloudinary.uploader import upload as cloudinary_upload
 from models.projects import Project
 from services.cloudinary import upload_file_to_cloudinary
 from models.account import StudentAccount
-from schemas.project import ProjectCreate, ProjectRead, ProjectUpdate, ProjectCreateForm, ProjectUpdateForm
+from schemas.project import ProjectCreate, ProjectRead, ProjectUpdate, ProjectCreateForm, ProjectUpdateForm, ProjectReviewRequest
 from models.database import get_session
 from services.enums import Status, Tags
 from core.dependencies import (
@@ -242,7 +242,7 @@ def delete_project(
 @routers.put("/{project_id}/review", response_model=ProjectRead)
 def review_project(
     project_id: int,
-    status: Status,
+    review_data: ProjectReviewRequest,
     session: Session = Depends(get_session),
     current_user: AccountType = Depends(require_supervisor_or_admin())
 ):
@@ -250,14 +250,15 @@ def review_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    if status not in [Status.APPROVED, Status.REJECTED]:
+    if review_data.status not in [Status.APPROVED, Status.REJECTED]:
         raise HTTPException(status_code=400, detail="Invalid review status")
 
     if current_user.role.value == "Supervisor" and project.supervisor_id != current_user.id:
         raise HTTPException(
             status_code=403, detail="Supervisors can only review projects they supervise")
 
-    project.status = status
+    project.status = review_data.status
+    project.review_comment = review_data.review_comment
     session.add(project)
     session.commit()
     session.refresh(project)

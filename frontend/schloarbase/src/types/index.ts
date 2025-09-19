@@ -107,6 +107,7 @@ export interface Project {
   tags?: Tags[];
   student?: StudentAccount;
   supervisor?: SupervisorAccount;
+  review_comment?: string;
 }
 
 // API Response types

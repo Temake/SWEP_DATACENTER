@@ -1,8 +1,8 @@
 """Initla mi
 
-Revision ID: 811594df20ad
+Revision ID: 787f7d87c72f
 Revises: 
-Create Date: 2025-09-11 16:50:01.884540
+Create Date: 2025-09-19 17:51:53.168057
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '811594df20ad'
+revision: str = '787f7d87c72f'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,7 +26,7 @@ def upgrade() -> None:
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('role', sa.Enum('STUDENT', 'SUPERVISOR', 'ADMIN', name='role'), nullable=False),
     sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=False),
+    sa.Column('email_verified', sa.Boolean(), nullable=True),
     sa.Column('department', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -38,14 +38,14 @@ def upgrade() -> None:
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('role', sa.Enum('STUDENT', 'SUPERVISOR', 'ADMIN', name='role'), nullable=False),
     sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=False),
+    sa.Column('email_verified', sa.Boolean(), nullable=True),
     sa.Column('department', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('faculty', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('office_address', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('phone_number', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('position', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('title', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('office_hours', sa.JSON(), nullable=True),
     sa.Column('bio', sqlmodel.sql.sqltypes.AutoString(length=300), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -57,7 +57,7 @@ def upgrade() -> None:
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('role', sa.Enum('STUDENT', 'SUPERVISOR', 'ADMIN', name='role'), nullable=False),
     sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=False),
+    sa.Column('email_verified', sa.Boolean(), nullable=True),
     sa.Column('department', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -75,7 +75,9 @@ def upgrade() -> None:
     sa.Column('year', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('description', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('file_url', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('document_url', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('status', sa.Enum('PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', name='status'), nullable=False),
+    sa.Column('review_comment', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('student_id', sa.Integer(), nullable=False),

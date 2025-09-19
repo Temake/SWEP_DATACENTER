@@ -57,6 +57,11 @@ class ProjectUpdate(SQLModel):
     tags: List[Tags] = []
 
 
+class ProjectReviewRequest(SQLModel):
+    status: Status
+    review_comment: Optional[str] = None
+
+
 
 
 class ProjectCreateForm:
@@ -133,6 +138,7 @@ class ProjectRead(SQLModel):
     file_url: Optional[str] = None
     document_url: Optional[str] = None
     status: Status
+    review_comment: Optional[str] = None
     student_id: int
     supervisor_id: Optional[int] = None
     tags: List[Tags] = []

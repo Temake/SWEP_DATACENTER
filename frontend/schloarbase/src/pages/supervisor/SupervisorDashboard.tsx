@@ -8,11 +8,12 @@ import type { Project, DashboardStats } from '../../types';
 import { Status } from '../../types';
 import apiService from '../../services/api';
 import { toast } from 'sonner';
-import ThemeToggle from '../../components/common/ThemeToggle';
+// import ThemeToggle from '../../components/common/ThemeToggle';
+import SupervisorNavigation from '../../components/common/SupervisorNavigation';
 
 
 const SupervisorDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,36 +64,7 @@ const SupervisorDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link to="/supervisor/dashboard" className="flex items-center">
-                <div className="bg-blue-600 text-white p-2 rounded-lg mr-3">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ScholarBase</h1>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <ThemeToggle />
-              <span className="text-gray-700 dark:text-gray-300">
-                {user?.name}
-              </span>
-              <Button
-                onClick={logout}
-                variant="outline"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SupervisorNavigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -109,25 +81,25 @@ const SupervisorDashboard: React.FC = () => {
 
           {/* Statistics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <Card>
-              <CardHeader className="pb-2 md:pb-3">
-                <CardTitle className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Supervised Students
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.total_students || 0}
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Active students under supervision
-                </p>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
+                Supervised Students
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                {stats?.total_students || 0}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Active students under supervision
+              </p>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="pb-2 md:pb-3">
-                <CardTitle className="text-xs md:text-sm font-medium text-yellow-600 dark:text-yellow-400">
+          <Card>
+            <CardHeader className="pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-yellow-600 dark:text-yellow-400">
                   Pending Reviews
                 </CardTitle>
               </CardHeader>
@@ -233,16 +205,16 @@ const SupervisorDashboard: React.FC = () => {
 
           {/* Recent Projects */}
           <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
+            <CardHeader className="pb-3 md:pb-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <div>
-                  <CardTitle>Recent Project Submissions</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">Recent Project Submissions</CardTitle>
+                  <CardDescription className="text-sm">
                     Latest projects from your supervised students
                   </CardDescription>
                 </div>
                 <Link to="/supervisor/projects">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="text-xs sm:text-sm w-full sm:w-auto">
                     View All
                   </Button>
                 </Link>
@@ -250,18 +222,18 @@ const SupervisorDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               {recentProjects.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {recentProjects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                    <div key={project.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <div className="flex-1 min-w-0 mb-3 sm:mb-0 sm:mr-4">
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-sm sm:text-base truncate">
                           {project.title}
                         </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
                           {project.student?.name} • {project.year}
                         </p>
-                        <div className="flex items-center gap-2">
-                          <Badge className={getStatusColor(project.status)}>
+                        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                          <Badge className={`${getStatusColor(project.status)} text-xs`}>
                             {project.status}
                           </Badge>
                           {project.tags?.slice(0, 2).map((tag) => (
@@ -274,9 +246,9 @@ const SupervisorDashboard: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 self-start sm:self-center">
                         <Link to={`/supervisor/projects/${project.id}`}>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                             Review
                           </Button>
                         </Link>
@@ -285,12 +257,12 @@ const SupervisorDashboard: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  <svg className="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-6 md:py-8 text-gray-500 dark:text-gray-400">
+                  <svg className="mx-auto h-10 w-10 md:h-12 md:w-12 mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p>No recent project submissions</p>
-                  <p className="text-sm">Student projects will appear here when submitted</p>
+                  <p className="text-sm md:text-base font-medium mb-1">No recent project submissions</p>
+                  <p className="text-xs md:text-sm">Student projects will appear here when submitted</p>
                 </div>
               )}
             </CardContent>

@@ -27,6 +27,7 @@ class Project(SQLModel, table=True):
     file_url: Optional[str] = Field(default=None)
     document_url: Optional[str] = Field(default=None)
     status: Status = Field(default=Status.PENDING)
+    review_comment: Optional[str] = Field(default=None,nullable=True)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     supervisor: Optional["SupervisorAccount"] = Relationship(back_populates="supervised_projects")

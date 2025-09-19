@@ -25,6 +25,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+.env.docker
 docs/
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -37,6 +39,7 @@ docs/
 *.sqlite
 # Installer logs
 pip-log.txt
+*.md
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports

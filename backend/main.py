@@ -45,6 +45,10 @@ app.add_middleware(
 def root():
     return {"message": "Welcome to Scholar Base API you can read the docs on the path (root_url)/docs"}
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "message": "ScholarBase API is running"}
+
 
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
 app.include_router(router=tag_router, prefix="/api/tags", tags=["Tags"])

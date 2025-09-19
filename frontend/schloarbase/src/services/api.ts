@@ -22,14 +22,14 @@ import type {
 
 class ApiService {
   private api: AxiosInstance;
-  private baseURL = 'http://localhost:8000/api'; // Update with your backend URL
+  private baseURL = process.env.VITE_API_BASE_URL
   private userDataCache: { data: AuthResponse['user']; timestamp: number } | null = null;
-  private CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+  private CACHE_DURATION = 5 * 60 * 1000;
 
   constructor() {
     this.api = axios.create({
       baseURL: this.baseURL,
-      timeout: 10000,
+      timeout: 10000000,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -54,8 +54,7 @@ class ApiService {
           // this.logout();
           // window.location.href = '/login';
           console.log("hred")
-          console.log(error.response?.detail)
-          console.log(error.response?.data?.detail)
+          
         }
         return Promise.reject(error);
       }
@@ -280,7 +279,7 @@ class ApiService {
   }
 
   async updateProjectStatus(projectId: number, data: { status: Status; review_comment?: string }): Promise<Project> {
-    const response = await this.api.patch<Project>(`/supervisor/projects/${projectId}/status`, data);
+    const response = await this.api.put<Project>(`/projects/${projectId}/review`, data);
     return response.data;
   }
 
