@@ -12,9 +12,10 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Download, FileText } from 'lucide-react';
 import type { Project, StudentAccount } from '../../types';
 import { Tags } from '../../types';
+import { downloadFile, generateProjectFilename } from '../../utils/downloadUtils';
 
 const projectSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(200, 'Title must be less than 200 characters'),
@@ -43,6 +44,24 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
   const { updateProject, loading, error, clearError } = useProject();
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
+  const [downloadingDocument, setDownloadingDocument] = useState(false);
+
+  const handleDownloadDocument = async () => {
+    if (!project?.document_url) return;
+    
+    try {
+      setDownloadingDocument(true);
+      const filename = generateProjectFilename(project, 'document');
+      const fileExtension = project.document_url.split('.').pop();
+      const fullFilename = fileExtension ? `${filename}.${fileExtension}` : filename;
+      
+      await downloadFile(project.document_url, fullFilename);
+    } catch (error) {
+      console.error('Error downloading document:', error);
+    } finally {
+      setDownloadingDocument(false);
+    }
+  };
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 5 }, (_, i) => (currentYear - i).toString());
@@ -227,6 +246,41 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
                 <p className="text-sm text-green-600">
                   Selected: {documentFile.name}
                 </p>
+              )}
+              {project?.document_url && !documentFile && (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-sm text-blue-600">Current document:</span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDownloadDocument}
+                    disabled={downloadingDocument}
+                    className="flex items-center gap-1"
+                  >
+                    {downloadingDocument ? (
+                      <>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                        <span>Downloading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-3 w-3" />
+                        <span>Download</span>
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.open(project.document_url, '_blank')}
+                    className="flex items-center gap-1"
+                  >
+                    <FileText className="h-3 w-3" />
+                    <span>View</span>
+                  </Button>
+                </div>
               )}
             </div>
 

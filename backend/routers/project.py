@@ -20,17 +20,21 @@ security = HTTPBearer()
 
 
 @routers.get("/", response_model=List[ProjectRead])
-def list_my_projects(
+async def list_my_projects(
     session: Session = Depends(get_session),
     current_user: AccountType = Depends(get_current_user),
     year: Optional[str] = None,
-    tags: Optional[List[Tags]] = Query(None, description="Filter by one or more tags"),
-    match_all: bool = Query(False, description="If true, require all tags to match; otherwise any")
+    tags: Optional[List[Tags]] = Query(
+        None, description="Filter by one or more tags"),
+    match_all: bool = Query(
+        False, description="If true, require all tags to match; otherwise any")
 ):
     if current_user.role.value == "Student":
-        statement = select(Project).where(Project.student_id == current_user.id)
+        statement = select(Project).where(
+            Project.student_id == current_user.id)
     elif current_user.role.value == "Supervisor":
-        statement = select(Project).where(Project.supervisor_id == current_user.id)
+        statement = select(Project).where(
+            Project.supervisor_id == current_user.id)
     else:
         statement = select(Project)
 
@@ -62,7 +66,7 @@ async def create_project(
             status_code=403,
             detail="Students can only create projects for themselves"
         )
-    
+
     document_url = None
     if project_form.document and project_form.document is not None:
         document_url = await upload_file_to_cloudinary(project_form.document)
@@ -88,13 +92,16 @@ async def create_project(
     session.refresh(new_project)
     return new_project
 
+
 @routers.get("/all", response_model=List[ProjectRead])
-def get_all_project(
+async def get_all_project(
     session: Session = Depends(get_session),
     current_user: AccountType = Depends(get_current_user),
     year: Optional[str] = None,
-    tags: Optional[List[Tags]] = Query(None, description="Filter by one or more tags"),
-    match_all: bool = Query(False, description="If true, require all tags to match; otherwise any"),
+    tags: Optional[List[Tags]] = Query(
+        None, description="Filter by one or more tags"),
+    match_all: bool = Query(
+        False, description="If true, require all tags to match; otherwise any"),
     status: Optional[Status] = None,
 ):
     statement = select(Project)
@@ -114,19 +121,19 @@ def get_all_project(
             if ors:
                 statement = statement.where(or_(*ors))
 
-    projects = session.exec(statement).all()
+    projects = await session.exec(statement).all()
     return projects
 
 
 @routers.get("/supervised-projects", response_model=List[ProjectRead])
-def get_supervised_projects(
+async def get_supervised_projects(
     session: Session = Depends(get_session),
     current_user: AccountType = Depends(get_current_supervisor)
 ):
     if current_user.role.value != "Supervisor":
         raise HTTPException(status_code=403, detail="Access denied")
-    
-    projects = session.exec(
+
+    projects = await session.exec(
         select(Project).where(Project.supervisor_id == current_user.id)
     ).all()
     return projects
@@ -144,10 +151,12 @@ def get_project(
 
     return project
 
+
 @routers.patch("/{student_id}/assign-supervisor")
 def assign_supervisor_to_project(
     student_id: int,
-    supervisor_id: int = Query(..., description="ID of the supervisor to assign"),
+    supervisor_id: int = Query(...,
+                               description="ID of the supervisor to assign"),
     session: Session = Depends(get_session),
     current_user: AccountType = Depends(require_supervisor_or_admin())
 ):
@@ -155,21 +164,21 @@ def assign_supervisor_to_project(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
-    # Check if supervisor exists (assuming SupervisorAccount model exists)
     from models.account import SupervisorAccount
     supervisor = session.get(SupervisorAccount, supervisor_id)
     if not supervisor:
         raise HTTPException(status_code=404, detail="Supervisor not found")
 
-    # For supervisors, they can only assign themselves
     if current_user.role.value == "Supervisor" and current_user.id != supervisor_id:
-        raise HTTPException(status_code=403, detail="Supervisors can only assign themselves to students")
+        raise HTTPException(
+            status_code=403, detail="Supervisors can only assign themselves to students")
 
     student.supervisor_id = supervisor_id
     session.add(student)
     session.commit()
     session.refresh(student)
     return student
+
 
 @routers.patch("/{project_id}", response_model=Project)
 async def update_project(
@@ -253,5 +262,3 @@ def review_project(
     session.commit()
     session.refresh(project)
     return project
-
-

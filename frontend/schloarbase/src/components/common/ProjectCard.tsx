@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import type { Project } from '../../types';
 import { Status, Tags } from '../../types';
 import { format } from 'date-fns';
+import {  FileText, ExternalLink } from 'lucide-react';
+import { downloadFile, generateProjectFilename, isDownloadableUrl } from '../../utils/downloadUtils';
+import { toast } from 'sonner';
 
 interface ProjectCardProps {
   project: Project;
@@ -25,6 +28,31 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   showActions = true,
   isOwner = false,
 }) => {
+  const [downloadingFile, setDownloadingFile] = useState<'file' | 'document' | null>(null);
+
+  const handleDownload = async (url: string, type: 'file' | 'document') => {
+    if (!url) return;
+    
+    try {
+      setDownloadingFile(type);
+      const filename = generateProjectFilename(project, type);
+      const fileExtension = url.split('.').pop();
+      const fullFilename = fileExtension ? `${filename}.${fileExtension}` : filename;
+      
+      await downloadFile(url, fullFilename);
+      toast.success(`${type === 'file' ? 'Project file' : 'Document'} downloaded successfully`);
+    } catch (error) {
+      console.error(`Error downloading ${type}:`, error);
+      toast.error(`Failed to download ${type}. Please try again.`);
+    } finally {
+      setDownloadingFile(null);
+    }
+  };
+
+  const handleView = (url: string) => {
+    // For non-downloadable URLs or if user prefers to view
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
   const getStatusColor = (status: Status) => {
     switch (status) {
       case Status.APPROVED:
@@ -132,22 +160,71 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <div className="mt-4 flex flex-wrap gap-2">
            
             {project.file_url && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => window.open(project.file_url, '_blank')}
-              >
-                View Project
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDownload(project.file_url!, 'file')}
+                  disabled={downloadingFile === 'file'}
+                  className="flex items-center gap-1"
+                >
+                  {downloadingFile === 'file' ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                      <span className="text-xs">Opening...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink className="h-3 w-3" />
+                      <span className="text-xs">Open Project Link</span>
+                    </>
+                  )}
+                </Button>
+                {!isDownloadableUrl(project.file_url) && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleView(project.file_url!)}
+                    className="px-2"
+                  >
+                    
+                  </Button>
+                )}
+              </div>
             )}
+            
             {project.document_url && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => window.open(project.document_url, '_blank')}
-              >
-                View Document
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDownload(project.document_url!, 'document')}
+                  disabled={downloadingFile === 'document'}
+                  className="flex items-center gap-1"
+                >
+                  {downloadingFile === 'document' ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                      <span className="text-xs">Downloading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="h-3 w-3" />
+                      <span className="text-xs">Download Document</span>
+                    </>
+                  )}
+                </Button>
+                {!isDownloadableUrl(project.document_url) && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleView(project.document_url!)}
+                    className="px-2"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
             )}
 
        

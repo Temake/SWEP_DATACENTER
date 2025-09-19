@@ -190,14 +190,14 @@ async def get_all_projects(
     result = []
     for project in projects:
         # Get student info
-        student = session.exec(
+        student = await session.exec(
             select(StudentAccount).where(StudentAccount.id == project.student_id)
         ).first()
         
         # Get supervisor info
         supervisor = None
         if project.supervisor_id:
-            supervisor = session.exec(
+            supervisor = await session.exec(
                 select(SupervisorAccount).where(SupervisorAccount.id == project.supervisor_id)
             ).first()
         

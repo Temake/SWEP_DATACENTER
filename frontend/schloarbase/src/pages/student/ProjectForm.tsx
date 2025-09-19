@@ -13,10 +13,11 @@ import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Badge } from '../../components/ui/badge';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Download, FileText } from 'lucide-react';
 import type { CreateProjectRequest, StudentAccount } from '../../types';
 import { Tags } from '../../types';
 import StudentNavigation from '@/components/common/StudentNavigation';
+import { downloadFile, generateProjectFilename } from '../../utils/downloadUtils';
 
 const projectSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(200, 'Title must be less than 200 characters'),
@@ -44,6 +45,24 @@ const ProjectForm: React.FC = () => {
   
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
+  const [downloadingDocument, setDownloadingDocument] = useState(false);
+
+  const handleDownloadDocument = async () => {
+    if (!currentProject?.document_url) return;
+    
+    try {
+      setDownloadingDocument(true);
+      const filename = generateProjectFilename(currentProject, 'document');
+      const fileExtension = currentProject.document_url.split('.').pop();
+      const fullFilename = fileExtension ? `${filename}.${fileExtension}` : filename;
+      
+      await downloadFile(currentProject.document_url, fullFilename);
+    } catch (error) {
+      console.error('Error downloading document:', error);
+    } finally {
+      setDownloadingDocument(false);
+    }
+  };
 
   const isEdit = !!id;
   const currentYear = new Date().getFullYear();
@@ -332,9 +351,39 @@ const ProjectForm: React.FC = () => {
                       </p>
                     )}
                     {currentProject?.document_url && !documentFile && isEdit && (
-                      <p className="text-sm text-blue-600 mt-1">
-                        Current document: <a href={currentProject.document_url} target="_blank" rel="noopener noreferrer" className="underline">View existing document</a>
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-blue-600">Current document:</span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleDownloadDocument}
+                          disabled={downloadingDocument}
+                          className="flex items-center gap-1"
+                        >
+                          {downloadingDocument ? (
+                            <>
+                              <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                              <span>Downloading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Download className="h-3 w-3" />
+                              <span>Download</span>
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(currentProject.document_url, '_blank')}
+                          className="flex items-center gap-1"
+                        >
+                          <FileText className="h-3 w-3" />
+                          <span>View</span>
+                        </Button>
+                      </div>
                     )}
                   </div>
 

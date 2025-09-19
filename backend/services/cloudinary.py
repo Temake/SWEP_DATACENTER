@@ -45,11 +45,14 @@ async def upload_file_to_cloudinary(file: UploadFile, folder: str = "scholar_bas
     try:
         file_content = await file.read()
         
+        # Remove extension from filename to avoid duplication
+        filename_without_ext = os.path.splitext(file.filename)[0] if file.filename else "document"
+        
         result = cloudinary_upload(
             file_content,
             folder=folder,
-            resource_type="auto",
-            public_id=f"{folder}/{file.filename}",
+            resource_type="raw",  # Use 'raw' for non-image files like PDFs
+            public_id=filename_without_ext,  # Don't include folder in public_id
             overwrite=True
         )
         

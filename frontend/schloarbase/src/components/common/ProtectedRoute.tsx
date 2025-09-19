@@ -23,7 +23,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const location = useLocation();
 useEffect( () =>{
 checkToken();
-},[])
+},[location])
 const checkToken = async () => {
   const access= localStorage.getItem("access_token")
   if(!access){
