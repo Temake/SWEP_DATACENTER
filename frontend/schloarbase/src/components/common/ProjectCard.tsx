@@ -31,16 +31,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
       case Status.REJECTED:
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      case Status.UNDER_REVIEW:
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
       case Status.PENDING:
         return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-      case Status.IN_PROGRESS:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case Status.COMPLETED:
-        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
-      case Status.SUSPENDED:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+    
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
@@ -135,10 +128,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons */}
         {showActions && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {/* View/Download Files */}
+           
             {project.file_url && (
               <Button
                 size="sm"
@@ -158,7 +150,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </Button>
             )}
 
-            {/* Owner Actions */}
+       
             {isOwner && project.status === Status.PENDING && (
               <>
                 <Button

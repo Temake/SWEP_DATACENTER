@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import ProjectCard from '../../components/common/ProjectCard';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
+import EditProjectDialog from '../../components/common/EditProjectDialog';
 import FilterBar from '../../components/common/FilterBar';
 import StudentNavigation from '../../components/common/StudentNavigation';
 import SupervisorProfile from '../../components/common/SupervisorProfile';
@@ -18,6 +19,9 @@ const MyProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; projectId?: number }>({
+    open: false,
+  });
+  const [editDialog, setEditDialog] = useState<{ open: boolean; project?: Project }>({
     open: false,
   });
   const [filters, setFilters] = useState<ProjectFilters>({
@@ -206,9 +210,19 @@ const MyProjectsPage: React.FC = () => {
 
           {/* Projects Grid */}
           {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+              <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div className="px-4 py-6 sm:px-0">
+                  <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+              </div>
             </div>
+          </div>
+        </main>
+      </div>
+
           ) : projects.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {projects.map((project) => (
@@ -216,8 +230,7 @@ const MyProjectsPage: React.FC = () => {
                   key={project.id}
                   project={project}
                   onEdit={(project) => {
-                    // Navigate to edit page
-                    window.location.href = `/student/projects/${project.id}/edit`;
+                    setEditDialog({ open: true, project });
                   }}
                   onDelete={(id) => setDeleteDialog({ open: true, projectId: id })}
                   isOwner={true}
@@ -262,6 +275,14 @@ const MyProjectsPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Edit Project Dialog */}
+      <EditProjectDialog
+        project={editDialog.project || null}
+        open={editDialog.open}
+        onOpenChange={(open) => setEditDialog({ open })}
+        onSave={loadProjects}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

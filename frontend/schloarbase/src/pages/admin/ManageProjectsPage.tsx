@@ -24,14 +24,6 @@ interface ProjectFormData {
   status: Status;
   tags: Tags[] | undefined;
 }
- const departments = [
-    'Computer Science',
-    'Software Engineering',
-    'Information Technology',
-    'Computer Engineering',
-    'Cyber Security',
-    'Information Systems',
-  ];
 
 interface ProjectDialogData {
   open: boolean;

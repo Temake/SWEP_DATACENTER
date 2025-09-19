@@ -20,7 +20,7 @@ export const Status = {
 export type Status = typeof Status[keyof typeof Status];
 
 export const Tags = {
-  AI: "AI",
+  AI : "AI",
   WEB_DEV: "Web Development",
   DATA_SCIENCE: "Data Science",
   MOBILE_DEV: "Mobile Development",
@@ -97,8 +97,8 @@ export interface Project {
   year: string;
   description: string;
   problem_statement?: string;
-  file_url?: string; // URL link to project files (GitHub, Drive, etc.)
-  document_url?: string; // URL to uploaded documentation files
+  file_url?: string; 
+  document_url?: string; 
   status: Status;
   created_at: string;
   updated_at: string;

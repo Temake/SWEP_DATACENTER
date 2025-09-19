@@ -3,7 +3,11 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
-from typing import Union
+from typing import Union  
+from models.database import get_session
+from sqlmodel import select
+from sqlalchemy.orm import selectinload
+            
 
 from models.database import get_session
 from models.account import StudentAccount, SupervisorAccount, AdminAccount
@@ -132,15 +136,36 @@ def login_user_json(
         data={"sub": user.email, "role": user.role.value, "user_id": user.id},
         expires_delta=access_token_expires
     )
-
+   
     return {"user":user,"access_token": access_token, "token_type": "bearer"}
 
 
 @auth_router.get("/me")
 def get_current_user_info(
+    include_relations: bool = False,
     current_user: AccountType = Depends(get_current_user)
 ):
     if current_user.role == Role.STUDENT:
+       
+        if not include_relations and hasattr(current_user, '_supervisor_loaded'):
+            return StudentResponse.model_validate(current_user)
+        
+        
+        if include_relations and not hasattr(current_user, 'supervisor'):
+      
+            session = next(get_session())
+            try:
+                student_with_supervisor = session.exec(
+                    select(StudentAccount)
+                    .options(selectinload(StudentAccount.supervisor))
+                    .where(StudentAccount.id == current_user.id)
+                ).first()
+                if student_with_supervisor:
+                    current_user = student_with_supervisor
+                    current_user._supervisor_loaded = True
+            finally:
+                session.close()
+        
         return StudentResponse.model_validate(current_user)
     elif current_user.role == Role.SUPERVISOR:
         return SupervisorResponse.model_validate(current_user)

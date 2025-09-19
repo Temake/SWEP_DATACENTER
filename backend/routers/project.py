@@ -189,16 +189,13 @@ async def update_project(
         raise HTTPException(
             status_code=403, detail="Supervisors can only update projects they supervise")
 
-    # Handle file upload if provided
     if project_form.document:
         document_url = await upload_file_to_cloudinary(project_form.document)
         project.document_url = document_url
 
-    # Handle tags if provided
     if project_form.tags is not None:
         project.tags = project_form.tags
 
-    # Update other fields if provided
     if project_form.title is not None:
         project.title = project_form.title
     if project_form.description is not None:

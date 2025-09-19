@@ -27,7 +27,6 @@ class Tags(str,enum.Enum):
     BIG_DATA = "Big Data"
     ROBOTICS="Robotics"
     OTHERS="Others"
-    OTHERS2="[]"
     
     
     

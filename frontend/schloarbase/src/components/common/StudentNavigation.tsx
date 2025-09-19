@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/button';
 import ThemeToggle from './ThemeToggle';
@@ -16,6 +16,7 @@ interface NavigationItem {
 const StudentNavigation: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation: NavigationItem[] = [
@@ -39,6 +40,15 @@ const StudentNavigation: React.FC = () => {
       ),
     },
     {
+      name: 'My Supervisor',
+      href: '/student/supervisor',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+    },
+    {
       name: 'Browse Projects',
       href: '/student/browse',
       icon: (
@@ -58,7 +68,7 @@ const StudentNavigation: React.FC = () => {
     },
   ];
 
-  // Add current path highlighting
+  
   const updatedNavigation = navigation.map(item => ({
     ...item,
     current: location.pathname === item.href || (item.href !== '/student/dashboard' && location.pathname.startsWith(item.href))
@@ -68,10 +78,9 @@ const StudentNavigation: React.FC = () => {
     <header className="bg-white dark:bg-gray-800 shadow sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Logo */}
+   
           <Logo/>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-1">
             {updatedNavigation.map((item) => (
               <Link
@@ -90,7 +99,7 @@ const StudentNavigation: React.FC = () => {
             ))}
           </nav>
 
-          {/* Desktop User Menu */}
+
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
             <span className="text-gray-700 dark:text-gray-300 text-sm">
@@ -106,7 +115,6 @@ const StudentNavigation: React.FC = () => {
             </Button>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             <ThemeToggle />
             <button
@@ -140,7 +148,7 @@ const StudentNavigation: React.FC = () => {
                     item.current
                       ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200'
                       : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700',
-                    'block px-3 py-2 rounded-md text-base font-medium flex items-center transition-colors'
+                    ' px-3 py-2 rounded-md text-base font-medium flex items-center transition-colors'
                   )}
                 >
                   <span className="mr-3">{item.icon}</span>
@@ -172,6 +180,7 @@ const StudentNavigation: React.FC = () => {
                 <Button
                   onClick={() => {
                     logout();
+                    navigate("/login")
                     setMobileMenuOpen(false);
                   }}
                   variant="outline"

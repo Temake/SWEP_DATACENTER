@@ -4,6 +4,7 @@ import os
 from jose import JWTError, jwt, ExpiredSignatureError
 from passlib.context import CryptContext
 from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 
 from models.account import StudentAccount, SupervisorAccount, AdminAccount
@@ -27,7 +28,11 @@ def get_password_hash(password: str) -> str:
 
 
 def get_account_by_email(session: Session, email: str) -> Optional[AccountType]:
-    student = session.exec(select(StudentAccount).where(StudentAccount.email == email)).first()
+    student = session.exec(
+        select(StudentAccount)
+        .options(selectinload(StudentAccount.supervisor))
+        .where(StudentAccount.email == email)
+    ).first()
     if student:
         return student
     

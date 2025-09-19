@@ -1,15 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
 import StudentNavigation from '../../components/common/StudentNavigation';
 import SupervisorProfile from '../../components/common/SupervisorProfile';
+import RecentActivity from '../../components/common/RecentActivity';
 import type { StudentAccount } from '../../types';
+import api from '../../services/api';
 
 const StudentDashboard: React.FC = () => {
-  const { user } = useAuth();
-  const studentUser = user as StudentAccount;
+  const { user, updateUser } = useAuth();
+  const [studentUser, setStudentUser] = useState<StudentAccount>(user as StudentAccount);
+  const [isLoadingSupervisor, setIsLoadingSupervisor] = useState(false);
+
+  useEffect(() => {
+    const fetchUserDataIfNeeded = async () => {
+      // Only fetch fresh data if supervisor is missing but supervisor_id exists
+      const student = user as StudentAccount;
+      if (student?.supervisor_id && !student?.supervisor && !isLoadingSupervisor) {
+        setIsLoadingSupervisor(true);
+        try {
+          console.log('Supervisor data missing, fetching fresh user data...');
+          const freshUserData = await api.fetchCurrentUser(false, true); // Include relations
+          setStudentUser(freshUserData as StudentAccount);
+          if (updateUser) {
+            updateUser(freshUserData);
+          }
+          console.log('Fresh user data loaded:', freshUserData);
+          console.log('Supervisor:', (freshUserData as StudentAccount).supervisor);
+        } catch (error) {
+          console.error('Failed to fetch fresh user data:', error);
+        } finally {
+          setIsLoadingSupervisor(false);
+        }
+      } else {
+        // Use existing data if supervisor is already present
+        setStudentUser(student);
+        console.log('Using cached user data:', student);
+        console.log('Cached supervisor:', student?.supervisor);
+      }
+    };
+
+    if (user) {
+      fetchUserDataIfNeeded();
+    }
+  }, [user, updateUser, isLoadingSupervisor]);
+
+  console.log('Current studentUser.supervisor:', studentUser.supervisor);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -121,28 +159,13 @@ const StudentDashboard: React.FC = () => {
             {/* Supervisor Section */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">My Supervisor</h3>
+              
               <SupervisorProfile supervisor={studentUser?.supervisor} compact={true} />
             </div>
           </div>
 
           {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>
-                Your latest project submissions and updates
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <svg className="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p>No recent activity</p>
-                <p className="text-sm">Your project submissions will appear here</p>
-              </div>
-            </CardContent>
-          </Card>
+          <RecentActivity maxItems={5} showTitle={true} />
         </div>
       </main>
     </div>

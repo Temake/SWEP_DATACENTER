@@ -13,6 +13,7 @@ import StudentDashboard from './pages/student/StudentDashboard';
 import MyProjectsPage from './pages/student/MyProjectsPage';
 import ProjectForm from './pages/student/ProjectForm';
 import BrowseProjectsPage from './pages/student/BrowseProjectsPage';
+import SupervisorProfilePage from './pages/student/SupervisorProfilePage';
 import SupervisorDashboard from './pages/supervisor/SupervisorDashboard';
 import SupervisedProjectsPage from './pages/supervisor/SupervisedProjectsPage';
 import StudentListPage from './pages/supervisor/StudentListPage';
@@ -93,6 +94,15 @@ function App() {
                 
                   <BrowseProjectsPage />
                
+              }
+            />
+
+            <Route
+              path="/student/supervisor"
+              element={
+                <ProtectedRoute allowedRoles={[Role.STUDENT]}>
+                  <SupervisorProfilePage />
+                </ProtectedRoute>
               }
             />
    

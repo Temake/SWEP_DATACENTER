@@ -23,6 +23,8 @@ import type {
 class ApiService {
   private api: AxiosInstance;
   private baseURL = 'http://localhost:8000/api'; // Update with your backend URL
+  private userDataCache: { data: AuthResponse['user']; timestamp: number } | null = null;
+  private CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
   constructor() {
     this.api = axios.create({
@@ -95,11 +97,46 @@ class ApiService {
   logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
+    this.invalidateUserCache();
   }
 
   getCurrentUser(): AuthResponse['user'] | null {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  async fetchCurrentUser(forceRefresh: boolean = false, includeRelations: boolean = false): Promise<AuthResponse['user']> {
+    // Check if we have cached data and it's still valid
+    const now = Date.now();
+    if (!forceRefresh && this.userDataCache && (now - this.userDataCache.timestamp) < this.CACHE_DURATION) {
+      console.log('Using cached user data');
+      return this.userDataCache.data;
+    }
+
+    console.log('Fetching fresh user data from server');
+    const params = includeRelations ? '?include_relations=true' : '';
+    const response = await this.api.get(`/auth/me${params}`);
+    
+    // Update cache
+    this.userDataCache = {
+      data: response.data,
+      timestamp: now
+    };
+    
+    // Update localStorage with fresh user data
+    localStorage.setItem('user', JSON.stringify(response.data));
+    return response.data;
+  }
+
+  invalidateUserCache(): void {
+    this.userDataCache = null;
+    // Also remove from localStorage to force fresh fetch
+    localStorage.removeItem('user');
+  }
+
+  // Helper method to specifically invalidate user cache when supervisor changes
+  invalidateUserCacheOnSupervisorChange(): void {
+    this.invalidateUserCache();
   }
 
   isAuthenticated(): boolean {

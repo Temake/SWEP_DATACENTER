@@ -67,7 +67,7 @@ class ProjectCreateForm:
         year: str = Form(...),
         supervisor_id: Optional[int] = Form(None),
         file_url: Optional[str] = Form(None),
-        tags: List[Tags] = Form([]),
+        tags: str = Form("[]"),  # Changed to str to handle JSON
         document: Optional[UploadFile] = File(None)
     ):
         self.title = title
@@ -76,7 +76,15 @@ class ProjectCreateForm:
         self.supervisor_id = supervisor_id
         self.file_url = file_url
         self.document = None
-        self.tags = tags
+        
+        try:
+            parsed_tags = json.loads(tags) if tags else []
+            self.tags = [Tags(tag) for tag in parsed_tags if tag in [t.value for t in Tags]]
+        except (json.JSONDecodeError, ValueError) as e:
+            print(f"Error parsing tags: {e}")
+            print(f"Received tags value: {tags}")
+            self.tags = []
+            
         if document is not None:
             if (hasattr(document, 'filename') and 
                 document.filename and 
@@ -128,7 +136,8 @@ class ProjectRead(SQLModel):
     student_id: int
     supervisor_id: Optional[int] = None
     tags: List[Tags] = []
-    
+    created_at: datetime
+    updated_at: datetime
     
     class Config:
         from_attributes = True   

@@ -7,7 +7,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useProject } from '../../context/ProjectContext';
 import { Button } from '../../components/ui/button';
 import { Alert, AlertDescription } from '../../components/ui/alert';
-import Logo from '../../components/common/logo';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
 import { Input } from '../../components/ui/input';
@@ -32,7 +31,7 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 const ProjectForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { 
     currentProject, 
     loading, 
@@ -159,62 +158,14 @@ const ProjectForm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Logo/>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700 dark:text-gray-300">
-                {user?.name}
-              </span>
-              <Button
-                onClick={logout}
-                variant="outline"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <StudentNavigation/>
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {/* Breadcrumb */}
-          <nav className="flex mb-8" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-4">
-              <li>
-                <Link to="/student/dashboard" className="text-gray-400 hover:text-gray-500">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <svg className="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                </svg>
-              </li>
-              <li>
-                <Link to="/student/projects" className="text-gray-400 hover:text-gray-500">
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <svg className="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                </svg>
-              </li>
-              <li>
-                <span className="text-gray-500">
-                  {isEdit ? 'Edit Project' : 'New Project'}
-                </span>
-              </li>
-            </ol>
-          </nav>
+        
 
-          {/* Page Header */}
+       
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               {isEdit ? 'Edit Project' : 'Create New Project'}

@@ -8,6 +8,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterRequest) => Promise<void>;
   logout: () => void;
+  updateUser: (user: User) => void;
   error: string | null;
   loading: boolean;
   isAuthenticated: boolean;
@@ -85,6 +86,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    // Also update localStorage
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   const hasRole = (role: Role): boolean => {
     return user?.role === role;
   };
@@ -99,6 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     error,
     register,
     logout,
+    updateUser,
     loading,
     isAuthenticated: !!user,
     hasRole,

@@ -64,6 +64,7 @@ class UserResponse(BaseModel):
 class StudentResponse(UserResponse):
     matric_no: str
     supervisor_id: Optional[int] = None
+    supervisor: Optional['SupervisorResponse'] = None
 
 
 class SupervisorResponse(UserResponse):
@@ -96,3 +97,6 @@ class Token(BaseModel):
     user:AccountType
     access_token: str
     token_type: str
+
+# Rebuild models to handle forward references
+StudentResponse.model_rebuild()
