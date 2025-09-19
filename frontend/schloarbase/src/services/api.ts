@@ -270,12 +270,15 @@ class ApiService {
     }
 
     const response = await this.api.get<StudentAccount[]>(`/admin/students?${params}`);
+    console.log(response.data)
     return response.data;
   }
 
   async getAllSupervisors(): Promise<SupervisorAccount[]> {
     const response = await this.api.get<SupervisorAccount[]>('/admin/supervisors');
+    console.log(response.data)
     return response.data;
+    
   }
 
   async getAllProjects(): Promise<Project[]> {
@@ -284,9 +287,10 @@ class ApiService {
   }
 
   async assignSupervisor(studentId: number, supervisorId: number): Promise<StudentAccount> {
-    const response = await this.api.patch<StudentAccount>(`/admin/students/${studentId}/assign-supervisor`, {
-      supervisor_id: supervisorId,
-    });
+    
+    const response = await this.api.patch<StudentAccount>(
+      `/projects/${studentId}/assign-supervisor?supervisor_id=${supervisorId}`
+    );
     return response.data;
   }
 

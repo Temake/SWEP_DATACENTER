@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import  Logo from '../../components/common/logo'
-import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
+import AdminNavigation from '../../components/common/AdminNavigation';
+import ProjectStatusChart from '../../components/charts/ProjectStatusChart';
 import apiService from '../../services/api';
 import type { DashboardStats } from '../../types';
 import { toast } from 'sonner';
-import ThemeToggle from '../../components/common/ThemeToggle';
 
 const AdminDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+ 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,35 +33,25 @@ const AdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <AdminNavigation />
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-           <Logo/>
-            <div className="flex items-center space-x-4">
-              <ThemeToggle />
-              <span className="text-gray-700 dark:text-gray-300">
-                {user?.name}
-              </span>
-              <Button
-                onClick={logout}
-                variant="outline"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AdminNavigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -177,33 +166,14 @@ const AdminDashboard: React.FC = () => {
 
           {/* Recent Activity */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-            <Card>
-              <CardHeader className="pb-4 md:pb-6">
-                <CardTitle className="text-lg md:text-xl">System Health</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 md:space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">Database Status</span>
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs">
-                      Healthy
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">Server Status</span>
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs">
-                      Online
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">Storage Usage</span>
-                    <Badge variant="outline" className="text-xs">
-                      68% Used
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Project Status Chart */}
+            {stats && (
+              <ProjectStatusChart
+                pending={stats.pending_projects}
+                approved={stats.approved_projects}
+                rejected={stats.rejected_projects}
+              />
+            )}
 
             <Card>
               <CardHeader className="pb-4 md:pb-6">

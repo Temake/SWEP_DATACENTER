@@ -36,7 +36,4 @@ class Status(str,enum.Enum):
     UNDER_REVIEW = "Under Review"
     APPROVED = "Approved"
     REJECTED = "Rejected"
-    IN_PROGRESS = "In Progress"
-    COMPLETED = "Completed"
-    SUSPENDED = "Suspended"
     

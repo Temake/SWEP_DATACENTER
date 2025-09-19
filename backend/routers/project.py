@@ -144,25 +144,32 @@ def get_project(
 
     return project
 
-@routers.post("/assign-supervisor", response_model=ProjectRead)
+@routers.patch("/{student_id}/assign-supervisor")
 def assign_supervisor_to_project(
-    project_id: int,
-    supervisor_id: int,
+    student_id: int,
+    supervisor_id: int = Query(..., description="ID of the supervisor to assign"),
     session: Session = Depends(get_session),
     current_user: AccountType = Depends(require_supervisor_or_admin())
 ):
-    project = session.get(Project, project_id)
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    student = session.get(StudentAccount, student_id)
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
 
-    if current_user.role.value == "Supervisor" and project.supervisor_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Supervisors can only assign themselves to projects they supervise")
+    # Check if supervisor exists (assuming SupervisorAccount model exists)
+    from models.account import SupervisorAccount
+    supervisor = session.get(SupervisorAccount, supervisor_id)
+    if not supervisor:
+        raise HTTPException(status_code=404, detail="Supervisor not found")
 
-    project.supervisor_id = supervisor_id
-    session.add(project)
+    # For supervisors, they can only assign themselves
+    if current_user.role.value == "Supervisor" and current_user.id != supervisor_id:
+        raise HTTPException(status_code=403, detail="Supervisors can only assign themselves to students")
+
+    student.supervisor_id = supervisor_id
+    session.add(student)
     session.commit()
-    session.refresh(project)
-    return project
+    session.refresh(student)
+    return student
 
 @routers.patch("/{project_id}", response_model=Project)
 async def update_project(

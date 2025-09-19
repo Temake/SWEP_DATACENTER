@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route,Navigate} from 'react-router-dom
 
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ProjectProvider } from './context/ProjectContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -26,8 +27,9 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-background">
+        <ProjectProvider>
+          <Router>
+            <div className="min-h-screen bg-background">
             <Routes>
            
             <Route path="/" element={<LandingPage />} />
@@ -163,6 +165,7 @@ function App() {
 
         </div>
       </Router>
+        </ProjectProvider>
     </AuthProvider>
     </ThemeProvider>
   );

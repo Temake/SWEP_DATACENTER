@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter,Depends, HTTPException, Security, Query
+from fastapi import APIRouter,Depends, HTTPException, Security, Query,Response
 from fastapi.security import HTTPBearer
 from sqlmodel import Session, select, func
 from typing import Optional, List
@@ -7,7 +7,7 @@ from cloudinary.uploader import upload as cloudinary_upload
 from models.projects import Project
 from services.cloudinary import upload_file_to_cloudinary
 from models.account import StudentAccount, SupervisorAccount
-from schemas.project import ProjectCreate, ProjectRead, ProjectUpdate, ProjectCreateForm, ProjectUpdateForm
+from schemas.project import StudentRead,SupervisorWithStudentsRead
 from models.database import get_session
 from services.enums import Status, Tags
 from core.dependencies import (
@@ -55,7 +55,7 @@ async def get_dashboard_stats(
         "total_supervisors": total_supervisors or 0
     }
 
-@admin.get("/students")
+@admin.get("/students",response_model=List[StudentRead])
 async def get_all_students(
     current_user: AccountType = Depends(require_supervisor_or_admin),
     session: Session = Depends(get_session),
@@ -106,16 +106,18 @@ async def get_all_students(
             .order_by(Project.created_at.desc())
             .limit(1)
         ).first()
+        supervis= session.get(SupervisorAccount,student.supervisor_id)
         
         student_data = {
             "id": student.id,
             "name": student.name,
             "email": student.email,
             "matric_no": student.matric_no,
-            "year": getattr(student, 'year', ''),  # Add year if it exists in your model
+            "level": getattr(student, 'level', ''),  
             "department": student.department,
             "role": student.role,
             "supervisor_id": student.supervisor_id,
+            "supervisor":supervis,
             "created_at": student.created_at.isoformat(),
             "updated_at": getattr(student, 'updated_at', student.created_at).isoformat(),
             "project_count": project_count or 0
@@ -146,12 +148,11 @@ async def get_all_projects(
     page: Optional[int] = Query(1, description="Page number"),
     per_page: Optional[int] = Query(50, description="Items per page")
 ):
-    """Get all projects with optional filtering and pagination"""
+    
     
     # Build base query
     statement = select(Project)
-    
-    # Apply filters
+   
     if status:
         statement = statement.where(Project.status == status)
     
@@ -239,4 +240,76 @@ async def get_all_projects(
         result.append(project_data)
     
     return result
+
+@admin.get("/supervisors",response_model=List[SupervisorWithStudentsRead])
+async def get_all_supervisors(
+    current_user: AccountType = Depends(require_supervisor_or_admin),
+    session: Session = Depends(get_session),
+    department: Optional[str] = Query(None, description="Filter by department"),
+    faculty: Optional[str] = Query(None, description="Filter by faculty"),
+    search: Optional[str] = Query(None, description="Search by name or email"),
+    page: Optional[int] = Query(1, description="Page number"),
+    per_page: Optional[int] = Query(50, description="Items per page")
+):
+
     
+
+    statement = select(SupervisorAccount)
+    
+
+    if department:
+        statement = statement.where(SupervisorAccount.department.ilike(f"%{department}%"))
+    
+    if faculty:
+        statement = statement.where(SupervisorAccount.faculty.ilike(f"%{faculty}%"))
+    
+    if search:
+        search_filter = or_(
+            SupervisorAccount.name.ilike(f"%{search}%"),
+            SupervisorAccount.email.ilike(f"%{search}%")
+        )
+        statement = statement.where(search_filter)
+    
+
+    offset = (page - 1) * per_page
+    statement = statement.offset(offset).limit(per_page)
+    
+    supervisors = session.exec(statement).all()
+    result = []
+    for supervisor in supervisors:  
+        project_count = session.exec(
+            select(func.count(Project.id)).where(Project.supervisor_id == supervisor.id)
+        ).first()
+          
+       
+        stat = select(StudentAccount).where(StudentAccount.supervisor_id == supervisor.id)
+        students = session.exec(stat).all()
+        supervisor_data = {
+            "id": supervisor.id,
+            "name": supervisor.name,
+            "email": supervisor.email,
+            "department": supervisor.department,
+            "role": supervisor.role,
+            "faculty": supervisor.faculty,
+            "office_address": supervisor.office_address,
+            "phone_number": supervisor.phone_number,
+            "title": supervisor.title,
+            "office_hours": supervisor.office_hours,
+            "bio": supervisor.bio,
+            "created_at": supervisor.created_at.isoformat(),
+            "students": students, 
+            "student_count": len(students),  
+            "project_count": project_count or 0
+        }
+        
+        result.append(supervisor_data)
+    
+    return result
+@admin.delete("/students/{student_id}")
+def deleteStudent(student_id:int,current_user: AccountType = Depends(require_supervisor_or_admin),session: Session = Depends(get_session)):
+    student= session.get(StudentAccount,student_id)
+    if not student:
+        raise HTTPException(status_code=404,detail="Student Not Found")
+    session.delete(student)
+    session.commit()
+    return Response(status_code=204,content="Student Deleted Succcesfully")

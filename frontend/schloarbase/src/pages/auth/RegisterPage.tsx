@@ -159,7 +159,7 @@ const RegisterPage: React.FC = () => {
     'Information Technology',
     'Computer Engineering',
     'Cyber Security',
-    'Data Science',
+    'Information Systems',
   ];
 
 

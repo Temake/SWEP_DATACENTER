@@ -292,9 +292,7 @@ const SupervisedProjectsPage: React.FC = () => {
                     <SelectItem value={Status.UNDER_REVIEW}>Under Review</SelectItem>
                     <SelectItem value={Status.APPROVED}>Approved</SelectItem>
                     <SelectItem value={Status.REJECTED}>Rejected</SelectItem>
-                    <SelectItem value={Status.IN_PROGRESS}>In Progress</SelectItem>
-                    <SelectItem value={Status.COMPLETED}>Completed</SelectItem>
-                    <SelectItem value={Status.SUSPENDED}>Suspended</SelectItem>
+                   
                   </SelectContent>
                 </Select>
 

@@ -1,31 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../components/ui/dialog';
-import { Label } from '../../components/ui/label';
+import AdminNavigation from '../../components/common/AdminNavigation';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import type { SupervisorAccount } from '../../types';
 import apiService from '../../services/api';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-interface SupervisorFormData {
-  name: string;
-  email: string;
-  department: string;
-  specialization: string;
-}
 
-interface SupervisorDialogData {
-  open: boolean;
-  mode: 'create' | 'edit';
-  supervisor?: SupervisorAccount;
-}
 
 interface SupervisorFilters {
   search?: string;
@@ -33,19 +19,10 @@ interface SupervisorFilters {
 }
 
 const ManageSupervisorsPage: React.FC = () => {
-  const { user, logout } = useAuth();
   const [supervisors, setSupervisors] = useState<SupervisorAccount[]>([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState<SupervisorAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<SupervisorFilters>({});
-  const [supervisorDialog, setSupervisorDialog] = useState<SupervisorDialogData>({ open: false, mode: 'create' });
-  const [formData, setFormData] = useState<SupervisorFormData>({
-    name: '',
-    email: '',
-    department: '',
-    specialization: '',
-  });
-  const [formLoading, setFormLoading] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; supervisor?: SupervisorAccount }>({ open: false });
 
   const loadSupervisors = useCallback(async () => {
@@ -92,46 +69,8 @@ const ManageSupervisorsPage: React.FC = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const handleCreateSupervisor = () => {
-    setFormData({
-      name: '',
-      email: '',
-      department: '',
-      specialization: '',
-    });
-    setSupervisorDialog({ open: true, mode: 'create' });
-  };
 
-  const handleEditSupervisor = (supervisor: SupervisorAccount) => {
-    setFormData({
-      name: supervisor.name,
-      email: supervisor.email,
-      department: supervisor.department,
-      specialization: supervisor.specialization || '',
-    });
-    setSupervisorDialog({ open: true, mode: 'edit', supervisor });
-  };
 
-  const handleSubmit = async () => {
-    setFormLoading(true);
-    try {
-      if (supervisorDialog.mode === 'create') {
-        await apiService.createSupervisor(formData);
-        toast.success('Supervisor created successfully');
-      } else if (supervisorDialog.mode === 'edit' && supervisorDialog.supervisor) {
-        await apiService.updateSupervisor(supervisorDialog.supervisor.id, formData);
-        toast.success('Supervisor updated successfully');
-      }
-      
-      setSupervisorDialog({ open: false, mode: 'create' });
-      loadSupervisors();
-    } catch (error) {
-      console.error('Failed to save supervisor:', error);
-      toast.error('Failed to save supervisor');
-    } finally {
-      setFormLoading(false);
-    }
-  };
 
   const handleDeleteSupervisor = async () => {
     if (!deleteDialog.supervisor) return;
@@ -156,47 +95,36 @@ const ManageSupervisorsPage: React.FC = () => {
       .slice(0, 2);
   };
 
-  const departments = [...new Set(supervisors.map(s => s.department))];
-
+    const departments = [
+    'Computer Science',
+    'Software Engineering',
+    'Information Technology',
+    'Computer Engineering',
+    'Cyber Security',
+    'Information Systems',
+  ];
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <AdminNavigation />
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading </p>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
 
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link to="/admin/dashboard" className="flex items-center">
-                <div className="bg-blue-600 text-white p-2 rounded-lg mr-3">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ScholarBase Admin</h1>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700 dark:text-gray-300">
-                {user?.name}
-              </span>
-              <Button
-                onClick={logout}
-                variant="outline"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AdminNavigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -208,12 +136,10 @@ const ManageSupervisorsPage: React.FC = () => {
                 Manage Supervisors
               </h2>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Create and manage supervisor accounts
+              Manage supervisor accounts
               </p>
             </div>
-            <Button onClick={handleCreateSupervisor}>
-              Add New Supervisor
-            </Button>
+           
           </div>
 
           {/* Statistics */}
@@ -332,11 +258,11 @@ const ManageSupervisorsPage: React.FC = () => {
                         </span>
                       </div>
                       
-                      {supervisor.specialization && (
+                      {supervisor.position && (
                         <div className="text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">Specialization:</span>
+                          <span className="text-gray-600 dark:text-gray-400">Title:</span>
                           <span className="ml-2 text-gray-900 dark:text-white">
-                            {supervisor.specialization}
+                            {supervisor.position}
                           </span>
                         </div>
                       )}
@@ -357,14 +283,7 @@ const ManageSupervisorsPage: React.FC = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleEditSupervisor(supervisor)}
-                        className="flex-1"
-                      >
-                        Edit
-                      </Button>
+                
                       <Button 
                         variant="destructive" 
                         size="sm"
@@ -400,79 +319,6 @@ const ManageSupervisorsPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Supervisor Dialog */}
-      <Dialog open={supervisorDialog.open} onOpenChange={(open) => setSupervisorDialog({ ...supervisorDialog, open })}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {supervisorDialog.mode === 'create' ? 'Create New Supervisor' : 'Edit Supervisor'}
-            </DialogTitle>
-            <DialogDescription>
-              Fill in the supervisor information below.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter full name"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="Enter email address"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="department">Department</Label>
-              <Input
-                id="department"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                placeholder="Enter department"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="specialization">Specialization</Label>
-              <Input
-                id="specialization"
-                value={formData.specialization}
-                onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-                placeholder="Enter area of specialization"
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setSupervisorDialog({ open: false, mode: 'create' })}
-              disabled={formLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={formLoading || !formData.name || !formData.email || !formData.department}
-            >
-              {formLoading ? 'Saving...' : 
-               supervisorDialog.mode === 'create' ? 'Create Supervisor' : 'Update Supervisor'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Confirmation */}
       <ConfirmDialog

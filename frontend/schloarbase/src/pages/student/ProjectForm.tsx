@@ -4,17 +4,20 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../context/AuthContext';
+import { useProject } from '../../context/ProjectContext';
 import { Button } from '../../components/ui/button';
+import { Alert, AlertDescription } from '../../components/ui/alert';
+import Logo from '../../components/common/logo';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Badge } from '../../components/ui/badge';
-import type { CreateProjectRequest, Project, StudentAccount } from '../../types';
+import { AlertCircle } from 'lucide-react';
+import type { CreateProjectRequest, StudentAccount } from '../../types';
 import { Tags } from '../../types';
-import apiService from '../../services/api';
-import { toast } from 'sonner';
+import StudentNavigation from '@/components/common/StudentNavigation';
 
 const projectSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(200, 'Title must be less than 200 characters'),
@@ -30,11 +33,18 @@ const ProjectForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(!!id);
+  const { 
+    currentProject, 
+    loading, 
+    error, 
+    createProject, 
+    updateProject, 
+    loadProject,
+    clearError 
+  } = useProject();
+  
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
-  const [existingProject, setExistingProject] = useState<Project | null>(null);
 
   const isEdit = !!id;
   const currentYear = new Date().getFullYear();
@@ -48,36 +58,27 @@ const ProjectForm: React.FC = () => {
       description: '',
       file_url: '',
       tags: [],
-      
     },
   });
 
-  const loadProject = React.useCallback(async (projectId: number) => {
-    try {
-      setInitialLoading(true);
-      const project = await apiService.getProject(projectId);
-      setExistingProject(project);
-      
-      // Populate form with existing data
-      form.setValue('title', project.title);
-      form.setValue('year', project.year);
-      form.setValue('description', project.description);
-      form.setValue('file_url', project.file_url || '');
-      setSelectedTags((project.tags || []).map(tag => tag as Tags));
-    } catch (error) {
-      console.error('Failed to load project:', error);
-      toast.error('Failed to load project');
-      navigate('/student/projects');
-    } finally {
-      setInitialLoading(false);
-    }
-  }, [form, navigate]);
-
+  // Load project for editing
   useEffect(() => {
     if (isEdit && id) {
-      loadProject(parseInt(id));
+      const projectId = parseInt(id);
+      loadProject(projectId);
     }
   }, [id, isEdit, loadProject]);
+
+  // Populate form when currentProject is loaded
+  useEffect(() => {
+    if (currentProject && isEdit) {
+      form.setValue('title', currentProject.title);
+      form.setValue('year', currentProject.year);
+      form.setValue('description', currentProject.description);
+      form.setValue('file_url', currentProject.file_url || '');
+      setSelectedTags((currentProject.tags || []).map(tag => tag as Tags));
+    }
+  }, [currentProject, isEdit, form]);
 
   useEffect(() => {
     form.setValue('tags', selectedTags);
@@ -95,7 +96,7 @@ const ProjectForm: React.FC = () => {
     if (file) {
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        toast.error('File size must be less than 10MB');
+        // Use toast or show error through context
         return;
       }
       
@@ -104,48 +105,56 @@ const ProjectForm: React.FC = () => {
   };
 
   const onSubmit = async (data: ProjectFormData) => {
-    setLoading(true);
-    try {
-      const projectData: CreateProjectRequest = {
-        title: data.title,
-        year: data.year,
-        description: data.description,
-        tags: selectedTags,
-        file_url: data.file_url || undefined,
-        document: documentFile || undefined,
-        supervisor_id: user?.role === 'Student' ? (user as StudentAccount).supervisor_id : undefined,
-      };
+    // Clear any previous errors
+    clearError();
+    
+    const projectData: CreateProjectRequest = {
+      title: data.title,
+      year: data.year,
+      description: data.description,
+      tags: selectedTags,
+      file_url: data.file_url || undefined,
+      document: documentFile || undefined,
+      supervisor_id: user?.role === 'Student' ? (user as StudentAccount).supervisor_id : undefined,
+    };
 
-      if (isEdit && existingProject) {
-        await apiService.updateProject({
-          id: existingProject.id,
-          ...projectData,
-        });
-        toast.success('Project updated successfully!');
-      } else {
-         console.log(projectData);
-        await apiService.createProject(projectData);
-       
-        toast.success('Project created successfully!');
-      }
-      
+    let result;
+    if (isEdit && currentProject) {
+      result = await updateProject({
+        id: currentProject.id,
+        ...projectData,
+      });
+    } else {
+      result = await createProject(projectData);
+    }
+    
+    if (result) {
       navigate('/student/projects');
-    } catch (error) {
-      console.error('Submit error:', error);
-      toast.error(isEdit ? 'Failed to update project' : 'Failed to create project');
-    } finally {
-      setLoading(false);
     }
   };
 
   const availableTags = Object.values(Tags).filter(tag => tag !== Tags.OTHERS);
 
-  if (initialLoading) {
+  // Show loading spinner when loading a project for editing
+  if (loading && isEdit && !currentProject) {
+    
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <StudentNavigation />
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading</p>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
+  
+
   }
 
   return (
@@ -154,16 +163,7 @@ const ProjectForm: React.FC = () => {
       <header className="bg-white dark:bg-gray-800 shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link to="/student/dashboard" className="flex items-center">
-                <div className="bg-blue-600 text-white p-2 rounded-lg mr-3">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
-                  </svg>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ScholarBase</h1>
-              </Link>
-            </div>
+            <Logo/>
             <div className="flex items-center space-x-4">
               <span className="text-gray-700 dark:text-gray-300">
                 {user?.name}
@@ -223,6 +223,24 @@ const ProjectForm: React.FC = () => {
               {isEdit ? 'Update your project details' : 'Submit your research project to the repository'}
             </p>
           </div>
+
+          {/* Error Alert */}
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {error}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearError}
+                  className="ml-2 h-6 px-2 text-xs"
+                >
+                  Dismiss
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Form */}
           <Card>
@@ -362,9 +380,9 @@ const ProjectForm: React.FC = () => {
                         Selected: {documentFile.name}
                       </p>
                     )}
-                    {existingProject?.document_url && !documentFile && (
+                    {currentProject?.document_url && !documentFile && isEdit && (
                       <p className="text-sm text-blue-600 mt-1">
-                        Current document: <a href={existingProject.document_url} target="_blank" rel="noopener noreferrer" className="underline">View existing document</a>
+                        Current document: <a href={currentProject.document_url} target="_blank" rel="noopener noreferrer" className="underline">View existing document</a>
                       </p>
                     )}
                   </div>

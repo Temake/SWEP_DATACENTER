@@ -3,6 +3,10 @@ from fastapi import Form, File, UploadFile
 from sqlmodel import SQLModel
 from services.enums import Status, Tags
 import json
+from pydantic import EmailStr
+from datetime import datetime
+
+from models.account import StudentAccount, SupervisorAccount
 
 
 class ProjectCreate(SQLModel):
@@ -14,8 +18,36 @@ class ProjectCreate(SQLModel):
     file_url: Optional[str] = None
     document_url: Optional[str] = None
     tags: List[Tags] = []
-
-
+class StudentRead(SQLModel):
+    id: int
+    name: str
+    email: EmailStr
+    matric_no: str
+    department: str
+    year: Optional[str] = None
+    supervisor_id: Optional[int] = None
+    supervisor: Optional[SupervisorAccount] = None
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+        # arbitrary_types_allowed= True
+class SupervisorWithStudentsRead(SQLModel):
+    id: int
+    name: str
+    email: EmailStr
+    department: str
+    position: Optional[str] = None
+    created_at: datetime
+    students: Optional[List[StudentRead]] = None
+    
+    class Config:
+        from_attributes = True
+        # arbitrary_types_allowed= True
+    
+    
+    
+    
 class ProjectUpdate(SQLModel):
     title: Optional[str] = None
     year: Optional[str] = None
@@ -23,6 +55,8 @@ class ProjectUpdate(SQLModel):
     file_url: Optional[str] = None
     document_url: Optional[str] = None
     tags: List[Tags] = []
+
+
 
 
 class ProjectCreateForm:

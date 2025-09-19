@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
@@ -9,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { Label } from '../../components/ui/label';
+import AdminNavigation from '../../components/common/AdminNavigation';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import type { StudentAccount, SupervisorAccount, StudentFilters } from '../../types';
 import apiService from '../../services/api';
@@ -31,7 +30,6 @@ interface StudentDialogData {
 }
 
 const ManageStudentsPage: React.FC = () => {
-  const { user, logout } = useAuth();
   const [students, setStudents] = useState<StudentAccount[]>([]);
   const [supervisors, setSupervisors] = useState<SupervisorAccount[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<StudentAccount[]>([]);
@@ -106,28 +104,7 @@ const ManageStudentsPage: React.FC = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const handleCreateStudent = () => {
-    setFormData({
-      name: '',
-      email: '',
-      matric_no: '',
-      year: '',
-      department: '',
-    });
-    setStudentDialog({ open: true, mode: 'create' });
-  };
 
-  const handleEditStudent = (student: StudentAccount) => {
-    setFormData({
-      name: student.name,
-      email: student.email,
-      matric_no: student.matric_no,
-      year: student.year || '',
-      department: student.department,
-      supervisor_id: student.supervisor_id,
-    });
-    setStudentDialog({ open: true, mode: 'edit', student });
-  };
 
   const handleAssignSupervisor = (student: StudentAccount) => {
     setFormData({
@@ -194,43 +171,26 @@ const ManageStudentsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <AdminNavigation />
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading </p>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
 
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link to="/admin/dashboard" className="flex items-center">
-                <div className="bg-blue-600 text-white p-2 rounded-lg mr-3">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ScholarBase Admin</h1>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700 dark:text-gray-300">
-                {user?.name}
-              </span>
-              <Button
-                onClick={logout}
-                variant="outline"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AdminNavigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -242,12 +202,10 @@ const ManageStudentsPage: React.FC = () => {
                 Manage Students
               </h2>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Create, edit, and assign supervisors to students
+                Assign supervisors to students
               </p>
             </div>
-            <Button onClick={handleCreateStudent}>
-              Add New Student
-            </Button>
+           
           </div>
 
           {/* Filters */}
@@ -261,14 +219,14 @@ const ManageStudentsPage: React.FC = () => {
                 />
                 
                 <Select
-                  value={filters.department || ''}
-                  onValueChange={(value) => handleFilterChange({ department: value })}
+                  value={filters.department || 'all'}
+                  onValueChange={(value) => handleFilterChange({ department: value === 'all' ? undefined : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by department" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Departments</SelectItem>
+                    <SelectItem value="all">All Departments</SelectItem>
                     {departments.map((dept) => (
                       <SelectItem key={dept} value={dept}>
                         {dept}
@@ -278,14 +236,14 @@ const ManageStudentsPage: React.FC = () => {
                 </Select>
 
                 <Select
-                  value={filters.year || ''}
-                  onValueChange={(value) => handleFilterChange({ year: value })}
+                  value={filters.year || 'all'}
+                  onValueChange={(value) => handleFilterChange({ year: value === 'all' ? undefined : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by year" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Years</SelectItem>
+                    <SelectItem value="all">All Years</SelectItem>
                     {years.map((year) => (
                       <SelectItem key={year} value={year}>
                         {year}
@@ -295,14 +253,18 @@ const ManageStudentsPage: React.FC = () => {
                 </Select>
 
                 <Select
-                  value={filters.supervisor_id?.toString() || ''}
-                  onValueChange={(value) => handleFilterChange({ supervisor_id: value ? Number(value) : undefined })}
+                  value={filters.supervisor_id?.toString() || 'all'}
+                  onValueChange={(value) => handleFilterChange({ 
+                    supervisor_id: value === 'all' ? undefined : 
+                                  value === '0' ? null : 
+                                  Number(value) 
+                  })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by supervisor" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Supervisors</SelectItem>
+                    <SelectItem value="all">All Supervisors</SelectItem>
                     <SelectItem value="0">Unassigned</SelectItem>
                     {supervisors.map((supervisor) => (
                       <SelectItem key={supervisor.id} value={supervisor.id.toString()}>
@@ -389,9 +351,7 @@ const ManageStudentsPage: React.FC = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => handleEditStudent(student)}>
-                        Edit
-                      </Button>
+                     
                       <Button 
                         variant="outline" 
                         size="sm" 
@@ -527,7 +487,7 @@ const ManageStudentsPage: React.FC = () => {
                     <SelectValue placeholder="Select supervisor" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No Supervisor</SelectItem>
+                    <SelectItem value="none">No Supervisor</SelectItem>
                     {supervisors.map((supervisor) => (
                       <SelectItem key={supervisor.id} value={supervisor.id.toString()}>
                         {supervisor.name}

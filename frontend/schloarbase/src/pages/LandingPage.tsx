@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import ThemeToggle from '../components/common/ThemeToggle';
 import cscImage from '../assets/csc.jpg';
+import { useAuth } from '@/context/AuthContext';
 
 const LandingPage: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   // Add smooth scrolling behavior
   useEffect(() => {
@@ -47,9 +49,14 @@ const LandingPage: React.FC = () => {
           <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
             About
           </a>
-          <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-            How It Works
-          </a>
+            <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+              How It Works
+            </a>
+          {isAuthenticated && (
+            <Link to="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+              Dashboard
+            </Link>
+          )}
           <ThemeToggle />
         </div>
 
@@ -96,6 +103,15 @@ const LandingPage: React.FC = () => {
             >
               How It Works
             </a>
+          {isAuthenticated && (
+            <Link 
+              to="/dashboard"
+              className="block text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Dashboard
+            </Link>
+          )}
           </div>
         </div>
       )}

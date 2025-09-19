@@ -53,6 +53,7 @@ export interface BaseAccount {
   name: string;
   role: Role;
   email: string;
+  position?:string
   email_verified: boolean;
   department: string;
   created_at: string;
@@ -180,7 +181,7 @@ export interface ProjectFilters {
 export interface StudentFilters {
   department?: string;
   year?: string;
-  supervisor_id?: number;
+  supervisor_id?: number | null;
   search?: string;
   page?: number;
   per_page?: number;
