@@ -22,7 +22,7 @@ import type {
 
 class ApiService {
   private api: AxiosInstance;
-  private baseURL = import.meta.env.API_URL
+  private baseURL = 'https://scholarbase-68qs.onrender.com/api'
   private userDataCache: { data: AuthResponse['user']; timestamp: number } | null = null;
   private CACHE_DURATION = 5 * 60 * 1000;
 
@@ -39,6 +39,7 @@ class ApiService {
     this.api.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('access_token');
+        
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
