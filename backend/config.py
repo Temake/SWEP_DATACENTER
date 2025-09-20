@@ -17,7 +17,7 @@ class BaselConfig(BaseModel):
     CLOUDINARY_API_KEY: Optional[str] = os.getenv("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET: Optional[str] = os.getenv("CLOUDINARY_API_SECRET")
     
- class  GloablConfig(BaseConfig):
+class  GloablConfig(BaselConfig):
     def __init__(self):
         super().__init__()
         cloudinary.config(
