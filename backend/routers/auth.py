@@ -47,7 +47,7 @@ def register_student(
         name=student_data.name,
         email=student_data.email,
         role=Role.STUDENT,
-        level=student.level,
+        level=student_data.level,
         department=student_data.department,
         hashed_password=hashed_password,
         matric_no=student_data.matric_no
