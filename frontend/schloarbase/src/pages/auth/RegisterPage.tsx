@@ -20,11 +20,7 @@ const baseRegisterSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z
     .string()
-    .email('Please enter a valid email address')
-    .regex(
-      /^[a-zA-Z0-9._%+-]+@oauife\.edu\.ng$/,
-      'Only School email addresses are allowed'
-    ),
+    .email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
   role: z.nativeEnum(Role),
