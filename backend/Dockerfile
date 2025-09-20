@@ -5,7 +5,8 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set work directory
+
+
 WORKDIR /app
 
 # Install system dependencies
@@ -19,6 +20,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project
 COPY . .
+
+
 
 # Expose port
 EXPOSE 8000
