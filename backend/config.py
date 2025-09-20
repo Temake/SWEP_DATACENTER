@@ -17,14 +17,7 @@ class BaselConfig(BaseModel):
     CLOUDINARY_API_KEY: Optional[str] = os.getenv("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET: Optional[str] = os.getenv("CLOUDINARY_API_SECRET")
     
-    # Redis Configuration
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    
-    # Celery Configuration
-    CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
-    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
-
-class GlobalConfig(BaselConfig):
+ class  GloablConfig(BaseConfig):
     def __init__(self):
         super().__init__()
         cloudinary.config(
@@ -38,10 +31,21 @@ class GlobalConfig(BaselConfig):
 class DevConfig(GlobalConfig):
     DATABASE_URL : str  = os.getenv("DEV_DATABASE_URL", "sqlite:///data.db")
     # model_config= SettingsConfigDict(env_prefix="DEV_")
+    REDIS_URL: str = os.getenv("DEV_REDIS_URL", "redis://localhost:6379/0")
+    
+
+    CELERY_BROKER_URL: str = os.getenv("DEV_CELERY_BROKER_URL", "redis://localhost:6379/0")
+    CELERY_RESULT_BACKEND: str = os.getenv("DEV_CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 
 class ProdConfig(GlobalConfig):
     DATABASE_URL: str = os.getenv("DATABASE_URL") or os.getenv("PROD_DATABASE_URL", "postgresql://user:password@db:5432/scholarbase")
     model_config= SettingsConfigDict(env_prefix="PROD_")
+    REDIS_URL: str = os.getenv("PROD_REDIS_URL", "redis://localhost:6379/0")
+    
+    # Celery Configuration
+    CELERY_BROKER_URL: str = os.getenv("PROD_CELERY_BROKER_URL", "redis://localhost:6379/0")
+    CELERY_RESULT_BACKEND: str = os.getenv("PROD_CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+
 
 @lru_cache()
 def get_config(env_state:str):

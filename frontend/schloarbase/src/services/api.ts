@@ -22,7 +22,7 @@ import type {
 
 class ApiService {
   private api: AxiosInstance;
-  private baseURL = process.env.VITE_API_BASE_URL
+  private baseURL = import.meta.env.API_URL || 'http://localhost:8000'
   private userDataCache: { data: AuthResponse['user']; timestamp: number } | null = null;
   private CACHE_DURATION = 5 * 60 * 1000;
 
