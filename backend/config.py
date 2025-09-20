@@ -16,8 +16,8 @@ class BaselConfig(BaseModel):
     CLOUDINARY_CLOUD_NAME: Optional[str] = os.getenv("CLOUDINARY_CLOUD_NAME")
     CLOUDINARY_API_KEY: Optional[str] = os.getenv("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET: Optional[str] = os.getenv("CLOUDINARY_API_SECRET")
-    
-class  GloablConfig(BaselConfig):
+
+class GlobalConfig(BaselConfig):
     def __init__(self):
         super().__init__()
         cloudinary.config(
@@ -27,7 +27,7 @@ class  GloablConfig(BaselConfig):
         )
     DATABASE_URL : Optional[str] = "sqlite:///data.db"
     DB_ROLL_BACK: bool = False
-   
+    
 class DevConfig(GlobalConfig):
     DATABASE_URL : str  = os.getenv("DEV_DATABASE_URL", "sqlite:///data.db")
     # model_config= SettingsConfigDict(env_prefix="DEV_")
