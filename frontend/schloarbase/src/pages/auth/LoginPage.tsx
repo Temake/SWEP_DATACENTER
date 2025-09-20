@@ -17,7 +17,13 @@ import { Role } from '../../types';
 import ThemeToggle from '../../components/common/ThemeToggle';
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z
+      .string()
+      .email('Please enter a valid email address')
+      .regex(
+        /^[a-zA-Z0-9._%+-]+@oauife\.edu\.ng$/,
+        'Only School email addresses are allowed'
+      ),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 

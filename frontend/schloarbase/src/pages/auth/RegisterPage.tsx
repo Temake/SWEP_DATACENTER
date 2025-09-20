@@ -18,7 +18,13 @@ import ThemeToggle from '../../components/common/ThemeToggle';
 
 const baseRegisterSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
+  email: z
+    .string()
+    .email('Please enter a valid email address')
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@oauife\.edu\.ng$/,
+      'Only School email addresses are allowed'
+    ),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
   role: z.nativeEnum(Role),
@@ -27,7 +33,7 @@ const baseRegisterSchema = z.object({
 
 const studentRegisterSchema = baseRegisterSchema.extend({
   matric_no: z.string().min(1, 'Matric number is required'),
-  level:z.string().min(1,'Select your Level of Education')
+  level: z.string().min(1, 'Level is required'),
 });
 
 const supervisorRegisterSchema = baseRegisterSchema.extend({
@@ -54,8 +60,8 @@ type RegisterFormData = {
   confirmPassword: string;
   role: 'Student' | 'Supervisor' | 'Admin';
   department: string;
-  level:string,
   matric_no?: string;
+  level?: string;
   faculty?: string;
   phone_number?: string;
   office_address?: string;
@@ -119,7 +125,7 @@ const RegisterPage: React.FC = () => {
       role: selectedRole,
       department: '',
       matric_no: '',
-      level:'',
+      level: '',
       faculty: '',
       phone_number: '',
       office_address: '',
@@ -155,10 +161,12 @@ const RegisterPage: React.FC = () => {
       toast.error(error);
     }
   };
-const levels=[
-  'Undergraduate',
-  'Postgraduate'
-]
+
+  const levels = [
+    "Undergraduate",
+    "Postgraduate"
+  ];
+
   const departments = [
     'Computer Science',
     'Software Engineering',
@@ -167,7 +175,6 @@ const levels=[
     'Cyber Security',
     'Information Systems',
   ];
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4 md:p-6 lg:p-8">
@@ -277,50 +284,50 @@ const levels=[
               />
 
               {selectedRole === Role.STUDENT && (
-                <FormField
-                  control={form.control}
-                  name="matric_no"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white text-sm md:text-base">Matric Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your matric number"
-                          className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm md:text-base h-9 md:h-10"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs md:text-sm" />
-                    </FormItem>
-                  )}
-                />
-              )}
-              {selectedRole === Role.STUDENT && (
-                <FormField
-                control={form.control}
-                name="level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Level Of Education</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm md:text-base h-9 md:h-10">
-                          <SelectValue placeholder="Select your level of education" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
-                        {levels.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-xs md:text-sm" />
-                  </FormItem>
-                )}
-              />
+                <>
+                  <FormField
+                    control={form.control}
+                    name="matric_no"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white text-sm md:text-base">Matric Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your matric number"
+                            className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm md:text-base h-9 md:h-10"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs md:text-sm" />
+                      </FormItem>
+                    )}
+                  />
 
+                  <FormField
+                    control={form.control}
+                    name="level"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white text-sm md:text-base">Level</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm md:text-base h-9 md:h-10">
+                              <SelectValue placeholder="Select your level" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                            {levels.map((level) => (
+                              <SelectItem key={level} value={level}>
+                                {level}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-xs md:text-sm" />
+                      </FormItem>
+                    )}
+                  />
+                </>
               )}
 
               <FormField
@@ -347,11 +354,9 @@ const levels=[
                   </FormItem>
                 )}
               />
-                
+
               {selectedRole === Role.SUPERVISOR  && (
                 <>
-                
-
                   <FormField
                     control={form.control}
                     name="office_address"
@@ -369,9 +374,11 @@ const levels=[
                       </FormItem>
                     )}
                   />
-                  </>)}
-                  { (selectedRole === Role.SUPERVISOR || selectedRole === Role.ADMIN) && (
-                    <>
+                </>
+              )}
+
+              {(selectedRole === Role.SUPERVISOR || selectedRole === Role.ADMIN) && (
+                <>
                   <FormField
                     control={form.control}
                     name="title"
@@ -396,8 +403,6 @@ const levels=[
                       </FormItem>
                     )}
                   />
-
-                  
 
                   <FormField
                     control={form.control}
