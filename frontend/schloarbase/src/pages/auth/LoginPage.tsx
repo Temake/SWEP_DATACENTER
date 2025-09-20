@@ -21,7 +21,7 @@ const loginSchema = z.object({
       .string()
       .email('Please enter a valid email address')
       .regex(
-        /^[a-zA-Z0-9._%+-]+@oauife\.edu\.ng$/,
+        /^[a-zA-Z0-9._%+-]+\.edu\.ng$/,
         'Only School email addresses are allowed'
       ),
   password: z.string().min(6, 'Password must be at least 6 characters'),
