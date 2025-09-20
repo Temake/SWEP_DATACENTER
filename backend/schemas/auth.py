@@ -29,6 +29,7 @@ class UserBase(BaseModel):
 
 class StudentRegister(UserBase):
     password: str
+    level:Optional[str] = None
     matric_no: str
     role: Role = Role.STUDENT
 

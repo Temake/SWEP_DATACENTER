@@ -19,11 +19,7 @@ import ThemeToggle from '../../components/common/ThemeToggle';
 const loginSchema = z.object({
   email: z
       .string()
-      .email('Please enter a valid email address')
-      .regex(
-        /^[a-zA-Z0-9._%+-]+\.edu\.ng$/,
-        'Only School email addresses are allowed'
-      ),
+      .email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
