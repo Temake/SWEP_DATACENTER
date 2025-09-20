@@ -18,6 +18,7 @@ interface StudentFormData {
   name: string;
   email: string;
   matric_no: string;
+  level: string;
   year: string;
   department: string;
   supervisor_id?: number;
@@ -40,6 +41,7 @@ const ManageStudentsPage: React.FC = () => {
     name: '',
     email: '',
     matric_no: '',
+    level: '',
     year: '',
     department: '',
   });
@@ -112,6 +114,7 @@ const ManageStudentsPage: React.FC = () => {
       email: student.email,
       matric_no: student.matric_no,
       year: student.year || '',
+      level: student.level || '',
       department: student.department,
       supervisor_id: student.supervisor_id,
     });

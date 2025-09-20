@@ -64,7 +64,8 @@ export interface BaseAccount {
 export interface StudentAccount extends BaseAccount {
   id:number;
   matric_no: string;
-  year?: string;
+  level?: string;
+  year: string;
   profile_picture?: string;
   supervisor_id?: number;
   supervisor?: SupervisorAccount;
@@ -136,6 +137,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   role: Role;
+  level?:string;
   matric_no?: string; // For students
   department: string;
   faculty?: string; // For supervisors
@@ -182,6 +184,7 @@ export interface ProjectFilters {
 export interface StudentFilters {
   department?: string;
   year?: string;
+  level?: string;
   supervisor_id?: number | null;
   search?: string;
   page?: number;
@@ -212,6 +215,7 @@ export interface StudentWithProject {
   name: string;
   email: string;
   matric_no: string;
+  level:string;
   year: string;
   department: string;
   role: Role;

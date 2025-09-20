@@ -22,6 +22,7 @@ class BaseAccount(SQLModel):
 class StudentAccount(BaseAccount,table=True):
     id :int = Field(primary_key=True,nullable=False)
     matric_no:str = Field(nullable=False,unique=True)
+    level: Optional[str] = Field(nullable=True)
     projects: List[Project] = Relationship(back_populates="student")
     supervisor_id: Optional[int] = Field(default=None, foreign_key="supervisoraccount.id")
     supervisor: Optional["SupervisorAccount"] = Relationship(back_populates="students")

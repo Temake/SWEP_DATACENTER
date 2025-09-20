@@ -27,6 +27,7 @@ const baseRegisterSchema = z.object({
 
 const studentRegisterSchema = baseRegisterSchema.extend({
   matric_no: z.string().min(1, 'Matric number is required'),
+  level:z.string().min(1,'Select your Level of Education')
 });
 
 const supervisorRegisterSchema = baseRegisterSchema.extend({
@@ -53,6 +54,7 @@ type RegisterFormData = {
   confirmPassword: string;
   role: 'Student' | 'Supervisor' | 'Admin';
   department: string;
+  level:string,
   matric_no?: string;
   faculty?: string;
   phone_number?: string;
@@ -117,6 +119,7 @@ const RegisterPage: React.FC = () => {
       role: selectedRole,
       department: '',
       matric_no: '',
+      level:'',
       faculty: '',
       phone_number: '',
       office_address: '',
@@ -152,7 +155,10 @@ const RegisterPage: React.FC = () => {
       toast.error(error);
     }
   };
-
+const levels=[
+  'Undergraduate',
+  'Postgraduate'
+]
   const departments = [
     'Computer Science',
     'Software Engineering',
@@ -289,6 +295,33 @@ const RegisterPage: React.FC = () => {
                   )}
                 />
               )}
+              {selectedRole === Role.STUDENT && (
+                <FormField
+                control={form.control}
+                name="level"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Level Of Education</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm md:text-base h-9 md:h-10">
+                          <SelectValue placeholder="Select your level of education" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                        {levels.map((level) => (
+                          <SelectItem key={level} value={level}>
+                            {level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-xs md:text-sm" />
+                  </FormItem>
+                )}
+              />
+
+              )}
 
               <FormField
                 control={form.control}
@@ -314,7 +347,7 @@ const RegisterPage: React.FC = () => {
                   </FormItem>
                 )}
               />
-
+                
               {selectedRole === Role.SUPERVISOR  && (
                 <>
                 
@@ -396,7 +429,7 @@ const RegisterPage: React.FC = () => {
                       <Input
                         placeholder="Create a password"
                         type="password"
-                        className="bg-gray-50 dark:bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 text-sm md:text-base h-9 md:h-10"
+                        className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm md:text-base h-9 md:h-10"
                         {...field}
                       />
                     </FormControl>
@@ -415,7 +448,7 @@ const RegisterPage: React.FC = () => {
                       <Input
                         placeholder="Confirm your password"
                         type="password"
-                        className="bg-gray-50 dark:bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 text-sm md:text-base h-9 md:h-10"
+                        className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm md:text-base h-9 md:h-10"
                         {...field}
                       />
                     </FormControl>

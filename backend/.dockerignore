@@ -16,6 +16,10 @@
 **/.settings
 **/.toolstarget
 **/.vs
+**/.db
+**/.env.docker
+**/env.docker
+**/.data.db
 **/.vscode
 **/*.*proj.user
 **/*.dbmdl

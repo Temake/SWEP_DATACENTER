@@ -23,6 +23,7 @@ class StudentRead(SQLModel):
     name: str
     email: EmailStr
     matric_no: str
+    level:Optional[str] = None
     department: str
     year: Optional[str] = None
     supervisor_id: Optional[int] = None
