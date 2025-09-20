@@ -218,7 +218,7 @@ const RegisterPage: React.FC = () => {
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white text-sm md:text-base">Role</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Role</FormLabel>
                     <Select
                       onValueChange={(value) => {
                         setSelectedRole(value as Role);
@@ -247,7 +247,7 @@ const RegisterPage: React.FC = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white text-sm md:text-base">Full Name</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Full Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter your full name"
@@ -265,7 +265,7 @@ const RegisterPage: React.FC = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white text-sm md:text-base">Email</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Email</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter your email"
@@ -286,7 +286,7 @@ const RegisterPage: React.FC = () => {
                     name="matric_no"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-sm md:text-base">Matric Number</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Matric Number</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter your matric number"
@@ -304,7 +304,7 @@ const RegisterPage: React.FC = () => {
                     name="level"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-sm md:text-base">Level</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Level</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm md:text-base h-9 md:h-10">
@@ -358,7 +358,7 @@ const RegisterPage: React.FC = () => {
                     name="office_address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-sm md:text-base">Office Address</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Office Address</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter your office address"
@@ -380,7 +380,7 @@ const RegisterPage: React.FC = () => {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-sm md:text-base">Title</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Title</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm md:text-base h-9 md:h-10">
@@ -405,7 +405,7 @@ const RegisterPage: React.FC = () => {
                     name="phone_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-sm md:text-base">Phone Number (Optional)</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Phone Number (Optional)</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter your phone number"
@@ -425,7 +425,7 @@ const RegisterPage: React.FC = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white text-sm md:text-base">Password</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Password</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Create a password"
@@ -444,7 +444,7 @@ const RegisterPage: React.FC = () => {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white text-sm md:text-base">Confirm Password</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-white text-sm md:text-base">Confirm Password</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Confirm your password"
