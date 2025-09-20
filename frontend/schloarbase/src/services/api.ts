@@ -82,6 +82,7 @@ class ApiService {
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
+    console.log(userData)
   const role = userData.role;
   console.log(userData,role)
     const response = await this.api.post<AuthResponse>(`/auth/register/${role}`, userData);

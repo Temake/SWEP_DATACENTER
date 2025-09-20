@@ -144,7 +144,7 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
     try {
 
-      const { ...registerData } = data;
+     const { confirm_password: _, ...registerData } = data;
       await registerUser(registerData);
       if (!error){
       toast.success('Registration successful!');
