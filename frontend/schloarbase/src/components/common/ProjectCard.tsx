@@ -281,7 +281,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     </>
                   )}
                 </Button>
-                {!isDownloadableUrl(project.document_url) && (
+                {/* {!isDownloadableUrl(project.document_url) && (
                   <Button
                     size="sm"
                     variant="ghost"
@@ -290,7 +290,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   >
                     <ExternalLink className="h-3 w-3" />
                   </Button>
-                )}
+                )} */}
               </div>
             )}
 
