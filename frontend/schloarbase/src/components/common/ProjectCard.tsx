@@ -17,6 +17,7 @@ interface ProjectCardProps {
   onReject?: (id: number) => void;
   showActions?: boolean;
   isOwner?: boolean;
+  expandedView?: boolean; // New prop for expanded viewing
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -27,6 +28,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onReject,
   showActions = true,
   isOwner = false,
+  expandedView = false, // Default to false for backwards compatibility
 }) => {
   const [downloadingFile, setDownloadingFile] = useState<'file' | 'document' | null>(null);
 
@@ -112,28 +114,56 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           </div>
         </div>
-        <CardDescription className="line-clamp-3">
+        <CardDescription className={expandedView ? "mb-4" : "line-clamp-3"}>
           {project.description}
         </CardDescription>
+        
+        {/* Problem Statement - Show in expanded view */}
+        {expandedView && project.problem_statement && (
+          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+              Problem Statement:
+            </p>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              {project.problem_statement}
+            </p>
+          </div>
+        )}
       </CardHeader>
       
       <CardContent className="flex-1 flex flex-col justify-between">
         <div>
           {/* Tags */}
           <div className="flex flex-wrap gap-1 mb-4">
-            {project.tags?.slice(0, 3).map((tag, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className={`text-xs ${getTagColor(tag as Tags)}`}
-              >
-                {tag}
-              </Badge>
-            ))}
-            {project.tags && project.tags.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
-                +{project.tags.length - 3} more
-              </Badge>
+            {expandedView ? (
+              // Show all tags in expanded view
+              project.tags?.map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className={`text-xs ${getTagColor(tag as Tags)}`}
+                >
+                  {tag}
+                </Badge>
+              ))
+            ) : (
+              // Show limited tags in normal view
+              <>
+                {project.tags?.slice(0, 3).map((tag, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className={`text-xs ${getTagColor(tag as Tags)}`}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+                {project.tags && project.tags.length > 3 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{project.tags.length - 3} more
+                  </Badge>
+                )}
+              </>
             )}
           </div>
 
@@ -153,6 +183,28 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               <span className="font-medium">Submitted:</span>{' '}
               {format(new Date(project.created_at), 'MMM dd, yyyy')}
             </p>
+            
+            {/* File and Document Availability */}
+            {expandedView && (
+              <div className="mt-3 space-y-1">
+                <p>
+                  <span className="font-medium">Project Link:</span>{' '}
+                  {project.file_url ? (
+                    <span className="text-green-600 dark:text-green-400">Available</span>
+                  ) : (
+                    <span className="text-gray-400">Not provided</span>
+                  )}
+                </p>
+                <p>
+                  <span className="font-medium">Document:</span>{' '}
+                  {project.document_url ? (
+                    <span className="text-green-600 dark:text-green-400">Available for download</span>
+                  ) : (
+                    <span className="text-gray-400">Not provided</span>
+                  )}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Review Comment - Show only when project is rejected */}
@@ -168,9 +220,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           )}
         </div>
 
-        {showActions && (
+        {/* Action buttons - Always show file/document actions when available */}
+        {(showActions || project.file_url || project.document_url) && (
           <div className="mt-4 flex flex-wrap gap-2">
-           
+            
+            {/* File URL Actions */}
             {project.file_url && (
               <div className="flex gap-1">
                 <Button
@@ -205,6 +259,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
             )}
             
+            {/* Document Download Actions */}
             {project.document_url && (
               <div className="flex gap-1">
                 <Button
@@ -239,8 +294,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
             )}
 
-       
-            {isOwner && project.status === Status.PENDING && (
+            {/* Owner Actions - Only show when user is owner and showActions is true */}
+            {showActions && isOwner && project.status === Status.PENDING && (
               <>
                 <Button
                   size="sm"
@@ -259,8 +314,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </>
             )}
 
-            {/* Supervisor Actions */}
-            {onApprove && project.status === Status.PENDING && (
+            {/* Supervisor Actions - Only show when showActions is true */}
+            {showActions && onApprove && project.status === Status.PENDING && (
               <>
                 <Button
                   size="sm"

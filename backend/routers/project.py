@@ -66,11 +66,13 @@ async def create_project(
             status_code=403,
             detail="Students can only create projects for themselves"
         )
-
+        
+    if not project_form.supervisor_id:
+        raise HTTPException(status_code=400, detail="You must be assigned a supervisor before creating a project.")
     document_url = None
     if project_form.document and project_form.document is not None:
         document_url = await upload_file_to_cloudinary(project_form.document)
-
+    
     new_project = Project(
         title=project_form.title,
         description=project_form.description,
