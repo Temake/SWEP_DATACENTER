@@ -102,7 +102,7 @@ async def get_all_project(
         None, description="Filter by one or more tags"),
     match_all: bool = Query(
         False, description="If true, require all tags to match; otherwise any"),
-    status: Optional[Status] = None,
+    status: Optional[Status]= None
 ):
     statement = select(Project)
 
@@ -110,7 +110,7 @@ async def get_all_project(
         statement = statement.where(Project.year == year)
 
     if status:
-        statement = statement.where(Project.status == status)
+        statement = statement.where(Project.status == "Approved")
 
     if tags:
         tag_values = [t.value for t in tags]
@@ -121,7 +121,7 @@ async def get_all_project(
             if ors:
                 statement = statement.where(or_(*ors))
 
-    projects = await session.exec(statement).all()
+    projects = session.exec(statement).all()
     return projects
 
 
