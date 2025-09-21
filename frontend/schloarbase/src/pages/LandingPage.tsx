@@ -134,7 +134,7 @@ const LandingPage: React.FC = () => {
           </h1>
           
           <p className="text-lg md:text-xl lg:text-1xl text-gray-200 mb-16 max-w-4xl mx-auto leading-relaxed">
-            Every line of research, every algorithm, every innovation from Great life's Computer
+            Every line of research, every algorithm, every innovation from Great Ife's Computer
             Science & Engineering department is preserved here as part of Africa's digital heritage.
           </p>
 

@@ -82,7 +82,7 @@ class ApiService {
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    console.log(userData)
+    
   const role = userData.role;
   console.log(userData,role)
     const response = await this.api.post<AuthResponse>(`/auth/register/${role}`, userData);
@@ -114,7 +114,7 @@ class ApiService {
       return this.userDataCache.data;
     }
 
-    console.log('Fetching fresh user data from server');
+  
     const params = includeRelations ? '?include_relations=true' : '';
     const response = await this.api.get(`/auth/me${params}`);
     
