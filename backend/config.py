@@ -42,7 +42,6 @@ class ProdConfig(GlobalConfig):
     model_config= SettingsConfigDict(env_prefix="PROD_")
     REDIS_URL: str = os.getenv("PROD_REDIS_URL", "redis://localhost:6379/0")
     
-    # Celery Configuration
     CELERY_BROKER_URL: str = os.getenv("PROD_CELERY_BROKER_URL", "redis://localhost:6379/0")
     CELERY_RESULT_BACKEND: str = os.getenv("PROD_CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 

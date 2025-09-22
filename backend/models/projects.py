@@ -12,13 +12,6 @@ if TYPE_CHECKING:
 
 
 
-
-
-
-# class ProjectTagLink(SQLModel, table=True):
-#     project_id: int = Field(foreign_key="project.id", primary_key=True)
-#     tag_id: int = Field(foreign_key="tag.id", primary_key=True)
-
 class Project(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True, max_length=200)
@@ -37,13 +30,3 @@ class Project(SQLModel, table=True):
     tags: List[Tags] = Field(default=[], sa_column=Column(JSON))
    
     
-    
-    
-
-# class Tag(SQLModel, table=True):
-#     id: int = Field(default=None, primary_key=True)
-#     name: str = Field(nullable=False, unique=True, index=True)
-
-#     projects: List[Project] = Relationship(
-#         back_populates="tags", link_model=ProjectTagLink
-#     )

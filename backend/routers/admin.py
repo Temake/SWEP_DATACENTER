@@ -24,7 +24,7 @@ async def get_dashboard_stats(
     current_user: AccountType = Depends(require_supervisor_or_admin),
     session: Session = Depends(get_session)
 ):
-    """Get admin dashboard statistics"""
+   
     
     # Count total projects
     total_projects = session.exec(select(func.count(Project.id))).first()
@@ -41,8 +41,7 @@ async def get_dashboard_stats(
     rejected_projects = session.exec(
         select(func.count(Project.id)).where(Project.status == Status.REJECTED)
     ).first()
-    
-    # Count total students and supervisors
+
     total_students = session.exec(select(func.count(StudentAccount.id))).first()
     total_supervisors = session.exec(select(func.count(SupervisorAccount.id))).first()
     
@@ -66,12 +65,12 @@ async def get_all_students(
     page: Optional[int] = Query(1, description="Page number"),
     per_page: Optional[int] = Query(50, description="Items per page")
 ):
-    """Get all students with optional filtering and pagination"""
     
-    # Build base query
+    
+
     statement = select(StudentAccount)
     
-    # Apply filters
+
     if department:
         statement = statement.where(StudentAccount.department.ilike(f"%{department}%"))
     
@@ -91,15 +90,13 @@ async def get_all_students(
     statement = statement.offset(offset).limit(per_page)
     
     students = session.exec(statement).all()
-    
-    # Get project counts for each student
+
     result = []
     for student in students:
         project_count = session.exec(
             select(func.count(Project.id)).where(Project.student_id == student.id)
         ).first()
-        
-        # Get latest project
+  
         latest_project = session.exec(
             select(Project)
             .where(Project.student_id == student.id)
@@ -177,24 +174,24 @@ async def get_all_projects(
         for tag_value in tag_values:
             statement = statement.where(Project.tags.contains([tag_value]))
     
-    # Apply pagination
+    
     offset = (page - 1) * per_page
     statement = statement.offset(offset).limit(per_page)
     
-    # Order by creation date (newest first)
+
     statement = statement.order_by(Project.created_at.desc())
     
     projects = session.exec(statement).all()
     
-    # Convert to response format with student and supervisor info
+   
     result = []
     for project in projects:
-        # Get student info
+
         student = await session.exec(
             select(StudentAccount).where(StudentAccount.id == project.student_id)
         ).first()
         
-        # Get supervisor info
+        
         supervisor = None
         if project.supervisor_id:
             supervisor = await session.exec(

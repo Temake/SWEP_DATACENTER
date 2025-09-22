@@ -16,20 +16,6 @@ routers = APIRouter()
 def list_tags(session: Session = Depends(get_session)):
     return [t.value for t in Tags]
 
-# @routers.post("/{project_id}/tags", response_model=ProjectRead)
-# def assign_tags_to_project(project_id: int, tags: list[Tags], session: Session = Depends(get_session),current_user:AccountType = Depends(get_current_user)):
-#     project = session.get(Project, project_id)
-#     if current_user.role.value == "Supervisor" and current_user.id
-#     if project.id != current_user.id or
-#     if not project:
-#         raise HTTPException(status_code=404, detail="Project not found")
-
-#     project.tags = list(set(project.tags + tags))
-
-#     session.add(project)
-#     session.commit()
-#     session.refresh(project)
-#     return project
 
 
 @routers.get("/{project_id}/tags", response_model=list[Tags])
