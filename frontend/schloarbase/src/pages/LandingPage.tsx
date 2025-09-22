@@ -265,7 +265,7 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="text-center">
             <p className="text-gray-500 dark:text-gray-400">
-              © 2025 Department of Computer Science and Engineering, OAU
+              © 2025 Faculty of Computing, OAU
             </p>
           </div>
         </div>
